@@ -6,7 +6,6 @@ import random
 import os
 from os.path import exists
 import shutil
-from typing import List, Any, Union
 
 class Evolver():
     @classmethod
@@ -75,16 +74,14 @@ class Evolver():
     # Mutation function based on a given chromosome and mutation rate
     @classmethod
     def mutate(cls, chromosome, MUT_RATE):
-        new_chromosome: List[List[Any]] = []  # Full chromosome
+        new_chromosome = []  # Full chromosome
         for loopIndex in range(len(chromosome)):
             loop = []  # Loop containing 16 genes
 
             for geneIndex in range(len(chromosome[loopIndex])):
                 gene = chromosome[loopIndex][geneIndex]
                 new_gene = ""  # A 9 bit representation of a jump or action gene
-                #
-                #print(gene)
-                #print("IsJumpGene: {}".format(cls.isJumpGene(gene)))
+
                 if cls.isJumpGene(gene):  # If the gene is a jump gene
                     new_gene += gene[0:5]
                     #print(new_gene)
@@ -97,7 +94,7 @@ class Evolver():
 
                 else:  # Action Gene
                     new_gene += gene[0]          
-                    for bit in gene[1:]: # Action gene has dynamic bits after bit 0.
+                    for bit in gene[1:]:  # Action gene has dynamic bits after bit 0.
                         if 0 == random.randint(0, MUT_RATE):  # Mutate Time!
                             # Replaces 1 with 0 or 0 with 1
                             bit = '1' if bit == '0' else '0'
@@ -110,8 +107,7 @@ class Evolver():
 
     @classmethod
     # Returns true if a gene is jump gene
-    def isJumpGene(cls, gene: List[Any]) -> bool:
-        #print(gene)
+    def isJumpGene(cls, gene):
 
         # Cases to accept both decoded and raw chromosomes
         if type(gene[0]) == bool:
@@ -146,10 +142,10 @@ class Evolver():
                     turn_quantity = int(instruction_gene[3:6], 2)
                     turn_target = int(instruction_gene[6:], 2)
 
-                    #print("Shoot: {}".format(shoot))
-                    #print("Thrust: {}".format(thrust))
-                    #print("Turn Quantity: {}".format(turn_quantity))
-                    #print("Turn Target: {}" .format(turn_target))
+                    # print("Shoot: {}".format(shoot))
+                    # print("Thrust: {}".format(thrust))
+                    # print("Turn Quantity: {}".format(turn_quantity))
+                    # print("Turn Target: {}" .format(turn_target))
 
                     # If first val is true, action gene
                     loop.append([True, shoot, thrust, turn_quantity, turn_target])
@@ -173,18 +169,14 @@ class Evolver():
                     elif j == 0:  # Predef action bit
                         gene += "0"
                     elif i == 0 and j == 1:  # Predefined conditional numbers
-                        gene += format(loopIndex, '04b') # 4 bit 0 padding
+                        gene += format(loopIndex, '04b')  # 4 bit 0 padding
                     elif i == 0 and j > 4:
                         gene += str(random.randint(0, 1))
                     elif i > 0:  # Regular action gene pure random 
                         gene += str(random.randint(0, 1))
-                #print(gene)
                 loop.append(gene)
-            #print(loop[0])
             chromosome.append(loop)
-        # print(chromosome)
         return chromosome
-    # generateChromosome()
 
     @classmethod
     def writeChromosomeToFile(cls, chromosome, filename):
@@ -202,7 +194,6 @@ class Evolver():
 
         with open(dataPath, "a") as f:
             f.write("Iteration {}: {} \n".format(chrome_number, chromosome)) 
-
 
     # Wipes data folder for each new run of core_controller
 
