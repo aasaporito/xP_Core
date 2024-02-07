@@ -8,250 +8,180 @@ import shutil
 from chromosome import Evolver
 
 
-class CoreAgent():
-    # Agent initializer
+class CoreAgent:
     def __init__(self, bot_name):
-        # Properties
         self.MUT_RATE = 300
         self.GENES_PER_LOOP = 8
         self.bot_name = bot_name
-
-        # Positionals
         self.heading = float(ai.selfHeadingDeg())
         self.tracking = float(ai.selfTrackingDeg())
-
         self.headingFeelers = []
         self.trackingFeelers = []
-
         self.X = -1
         self.Y = -1
         self.heading = 90.0
         self.speed = -1
-
-        # X-Pilot Settings
         ai.setTurnSpeed(20.0)
         ai.setPower(8)
-
-        # Genetic Data
-        self.bin_chromosome = None  # Binary chromosome, originally called chromosome or raw_chrome_values
-        self.dec_chromosome = None  #Decoded chromosome 
-        self.current_loop = None  # Current loop in the chromosome 
+        self.bin_chromosome = None
+        self.dec_chromosome = None
+        self.current_loop = None
         self.chromosome_iteration = 0
-
-        # Genetic Indices
         self.current_loop_idx = 0
         self.current_gene_idx = 0
-
-        # Score Data
         self.score = 0
         self.prev_score = 0
-        self.framesPostDeath = 0 
-        self.feed_history = [''*5]  # Only stores server messages relevant to agent
+        self.framesPostDeath = 0
+        self.feed_history = ['' * 5]
         self.last_death = ["null", "null"]
         self.last_kill = ["null", "null"]
         self.prior_death = ["null", "null"]
         self.crossover_completed = False
-
-        # Enemy Data
         self.enemy_dist = -1
         self.enemy_dir = -1
         self.enemy_x = -1
         self.enemy_y = -1
         self.enemy_speed = -1
         self.enemy_heading = -1
-
-        # Bullet Data
         self.closest_bullet_distance = -1
         self.shot_x = -1
         self.shot_y = -1
         self.angle_to_shot = -1
-
-        #self.createTracebackFolder()
         self.initializeCGA()
         self.generateFeelers(10)
         print("Alive!")
-
         self.frames_dead = 0
 
     @classmethod
-    def createTracebackFolder(cls):
-        # Data folder
+    def create_traceback_folder(cls):
         try:
             shutil.rmtree("tracebacks/")
         except:
             pass
-
         os.mkdir("tracebacks/")
 
-    # AI LOOP
     def AI_Loop(self):
         try:
-            if ai.selfAlive() == 1:  # Alive
+            if ai.selfAlive() == 1:
                 self.frames_dead = 0
                 self.updateAgentData()
                 self.updateEnemyData()
                 self.updateBulletData()
                 self.updateScore()
-                
                 self.crossover_completed = False
-                
                 gene = self.current_loop[self.current_gene_idx]
                 print("Gene: {}".format(gene))
-                if Evolver.isJumpGene(gene):   # If gene is a jump gene
-                    if self.checkConditional(gene[1]):  # If the conditional is true
-                        # Jump
+                if Evolver.isJumpGene(gene):
+                    if self.checkConditional(gene[1]):
                         self.current_loop_idx = gene[2]
                         self.current_loop = self.dec_chromosome[self.current_loop_idx]
                         self.current_gene_idx = 0
-        
-                        # TODO : Make this check repeat so we always execute an action in any given frame
-                        return  # End current iteration to start at new cycle
-                    else:  # The conditional is not true
+                        return
+                    else:
                         self.incrementGeneIndex()
-
                 gene = self.current_loop[self.current_gene_idx]
-
-                # Action gene
                 ActionGene(gene, self)
                 self.incrementGeneIndex()
-
-            else:  # Dead
+            else:
                 self.processServerFeed()
                 self.frames_dead += 1
                 if self.frames_dead >= 5:
-                    
                     self.wasKilled()
-
                     self.frames_dead = -2000
-
         except Exception as e:
             print("Exception")
             print(str(e))
             traceback.print_exc()
-
             traceback_str = traceback.format_exc()
-
-            # Write the traceback to file
-            with open("tracebacks/traceback_{}.txt".format(bot_name), "w") as f:
+            with open("tracebacks/traceback_{}.txt".format(self.bot_name), "w") as f:
                 f.write(traceback_str)
                 f.write(str(self.bin_chromosome))
                 f.write(str(self.dec_chromosome))
                 f.write(str(self.current_loop))
-
             ai.quitAI()
 
     def incrementGeneIndex(self):
-        self.current_gene_idx = ((self.current_gene_idx + 1) % self.GENES_PER_LOOP)
+        self.current_gene_idx = (self.current_gene_idx + 1) % self.GENES_PER_LOOP
         return self.current_gene_idx
 
     def updateScore(self):
         self.prev_score = self.score
         self.score = ai.selfScore()
 
-    # Update agent's positions, data, etc:
     def updateAgentData(self):
         self.X = int(ai.selfX())
         self.Y = int(ai.selfY())
         self.speed = float(ai.selfSpeed())
 
-    # Update enemy data
     def updateEnemyData(self):
-        closest_ship_id = int(ai.closestShipId()) 
-
+        closest_ship_id = int(ai.closestShipId())
         if closest_ship_id != -1:
             self.enemy_dist = float(ai.enemyDistanceId(closest_ship_id))
-            
             self.enemy_x = int(ai.screenEnemyXId(closest_ship_id))
             self.enemy_y = int(ai.screenEnemyYId(closest_ship_id))
             self.enemy_speed = float(ai.enemySpeedId(closest_ship_id))
             self.enemy_heading = float(ai.enemyHeadingDegId(closest_ship_id))
-            
             self.angle_to_enemy = int(self.findAngle())
             self.enemy_dir = self.getEnemyDirection()
-        else: 
+        else:
             self.enemy_dist = -1
-            
             self.enemy_x = -1
             self.enemy_y = -1
             self.enemy_speed = -1
             self.enemy_heading = -1
-
             self.angle_to_enemy = -1
             self.enemy_dir = -1
 
-    # Update bullet data
     def updateBulletData(self):
         if ai.shotDist(0) > 0:
             self.closest_bullet_distance = float(ai.shotDist(0))
             self.shot_x = ai.shotX(0)
             self.shot_y = ai.shotY(0)
             self.angle_to_shot = self.findAngle("bullet")
-
         else:
             self.closest_bullet_distance = -1
             self.shot_x = -1
             self.shot_y = -1
             self.angle_to_shot = -1
 
-    # Create all needed wall feelers for the AI
-    def generateFeelers(self, step): 
-        # Tracking
+    def generateFeelers(self, step):
         for angle in range(0, 360, step):
             self.trackingFeelers.append(ai.wallFeeler(500, int(self.tracking + angle)))
-
-        # Heading
         for angle in range(0, 360, step):
             self.headingFeelers.append(ai.wallFeeler(500, int(self.heading + angle)))
-
-        # Heading/Tracking individuals
         self.heading = float(ai.selfHeadingDeg())
         self.tracking = float(ai.selfTrackingDeg())
 
-    # Sets all needed values for a new agent, by default creates a new chromosome, a chromosome can be passed in.
-
     def initializeCGA(self, input_chrome=Evolver.generateChromosome()):
         self.chromosome_iteration += 1
-
         self.bin_chromosome = input_chrome
         self.dec_chromosome = Evolver.readChrome(self.bin_chromosome)
-
         print("Chromosome: {}".format(self.bin_chromosome))
-
-        # Reset kills/death record
         self.last_kill = ["null", "null"]
         self.last_death = ["null", "null"]
-
-        # Reset place in chromosome
-        self.current_loop_idx = 0  # Current Loop Number
+        self.current_loop_idx = 0
         self.current_loop = self.dec_chromosome[0]
-        self.current_gene_idx = 0  # Current gene Number within a given loop
-        Evolver.writeChromosomeToFile(self.bin_chromosome, "{}.txt".format(self.bot_name))  # noqa: E501
-        Evolver.logChromeosomeHistory(self.bin_chromosome, self.chromosome_iteration, "{}_history.txt".format(self.bot_name))
+        self.current_gene_idx = 0
+        Evolver.writeChromosomeToFile(self.bin_chromosome, "{}.txt".format(self.bot_name))
+        Evolver.logChromeosomeHistory(self.bin_chromosome, self.chromosome_iteration,
+                                      "{}_history.txt".format(self.bot_name))
 
-    # Checks if a kill has been made, if yes -> write it to file and send the file name to chat
-
-    # Returns a kill, in the format of [killer, victim]
     def processServerFeed(self):
         self.feed_history = []
-        #sleep(0.1)
         for i in range(5):
             serverMessage = ai.scanGameMsg(i)
-            #print(serverMessage)
             if self.bot_name in serverMessage and "ratio" not in serverMessage and "crashed" not in serverMessage and "entered" not in serverMessage:
                 self.feed_history.append(serverMessage)
-
         killer = "null"
         victim = "null"
         for message in self.feed_history:
             if "killed" in message:
                 victim = message.split(" was")[0]
-                killer = message.split("from ")[-1][:-1]  # remove period from end
+                killer = message.split("from ")[-1][:-1]
                 break
             elif "smashed" in message or "trashed" in message:
-                self.last_death = [killer,  victim]
+                self.last_death = [killer, victim]
                 return
-
-        # reset to nones on ai.self alive is false
         output = [killer, victim]
         if killer == self.bot_name:
             self.last_kill = output
@@ -260,53 +190,31 @@ class CoreAgent():
 
     def wasKilled(self):
         print(self.last_death)
-        if "null" in self.last_death: 
+        if "null" in self.last_death:
             return
-
-        if (ai.selfAlive() == 0) and self.crossover_completed is False:  # If dead
-            # We've been killed by an another agent.
+        if ai.selfAlive() == 0 and self.crossover_completed is False:
             new_chromosome_file_name = "data/" + "{}.txt".format(self.last_death[0])
-
             new_chromosome = None
             with open(new_chromosome_file_name, 'r') as f:
-                new_chromosome = eval(f.read())  # TODO remove eval
-
-            # Evolution
+                new_chromosome = eval(f.read())
             cross_over_child = Evolver.crossover(self.bin_chromosome, new_chromosome)
             mutated_child = Evolver.mutate(cross_over_child, self.MUT_RATE)
-            # Set new chromosome in place of old
             self.initializeCGA(mutated_child)
-
             self.crossover_completed = True
             self.self_destructed = False
-        
-    # Relative to us
 
-    def findMinWallAngle(self, wallFeelers) -> int:
+    def findMinWallAngle(self, wallFeelers):
         min_wall = min(wallFeelers)
         min_index = wallFeelers.index(min_wall)
+        angle = int(10 * min_index)
+        return angle if angle < 180 else angle - 360
 
-        angle = int(10*min_index)
-
-        if angle < 180:  # wall to the right
-            return angle
-        else:
-            return angle - 360
-
-    # Relative to us
     def findMaxWallAngle(self, wallFeelers):
         max_wall = max(wallFeelers)
         max_index = wallFeelers.index(max_wall)
+        angle = int(10 * max_index)
+        return angle if angle < 180 else angle - 360
 
-        angle = int(10*max_index)
-
-        if angle < 180:  # wall to the right
-            return angle
-        else:
-            return angle - 360
-
-    # Relative to world internally, returns relative to us
-    # No parameters for enemy version
     def findAngle(self, param=None):
         if param is None:
             new_enemy_x = self.enemy_x - self.X
@@ -314,155 +222,113 @@ class CoreAgent():
         else:
             new_enemy_x = self.shot_x - self.X
             new_enemy_y = self.shot_y - self.Y
-
         enemy_angle = -1
-        # If positive, enemy to right
-        # If negative, enemy to left
         try:
-            enemy_angle = math.degrees(math.atan(new_enemy_y/new_enemy_x))
+            enemy_angle = math.degrees(math.atan(new_enemy_y / new_enemy_x))
         except:
-            enemy_angle = 0  # in the case of division by 0
+            enemy_angle = 0
+        angle_to_enemy = int(self.heading - enemy_angle)
+        return angle_to_enemy if angle_to_enemy < 360 - angle_to_enemy else angle_to_enemy - 360
 
-        angleToEnemy = int(self.heading - enemy_angle)
-
-        if angleToEnemy < 360 - angleToEnemy:  # enemy to the right
-            return angleToEnemy
-        else:
-            return angleToEnemy - 360
-
-    def checkConditional(self, conditional_index): 
+    def checkConditional(self, conditional_index):
         min_wall_dist = min(self.headingFeelers)
-
-        # 16 conditionals Core 2.0 in Action
-        conditional_List = [self.speed < 6, self.speed == 0,
-                            self.enemy_dist < 50, self.headingFeelers[0] < 100,
+        conditional_list = [self.speed < 6, self.speed == 0, self.enemy_dist < 50, self.headingFeelers[0] < 100,
                             self.enemy_dist < 150 and self.enemy_dir == 1,
                             self.enemy_dist < 150 and self.enemy_dir == 2,
-                            # True,
                             self.enemy_dist < 100 and self.enemy_dir == 3,
                             self.enemy_dist < 100 and self.enemy_dir == 4,
                             min_wall_dist < 200, min_wall_dist < 75, min_wall_dist > 300, min_wall_dist < 150,
-                            self.closest_bullet_distance < 100, self.closest_bullet_distance < 200, self.closest_bullet_distance <50,
-                            self.enemy_dist == -1
-                            ]
-
-        result = conditional_List[conditional_index]
-        return result
+                            self.closest_bullet_distance < 100, self.closest_bullet_distance < 200,
+                            self.closest_bullet_distance < 50, self.enemy_dist == -1]
+        return conditional_list[conditional_index]
 
     def wallBetweenTarget(self):
         return ai.wallBetween(int(self.X), int(self.Y), int(self.enemy_x), int(self.enemy_y)) != -1
 
     def getEnemyDirection(self):
         direction = -1
-
         theta = None
-        wallPreEnemy = False
-        shotTolerance = random.randint(-5, 5)
-
+        wall_pre_enemy = False
+        shot_tolerance = random.randint(-5, 5)
         if self.enemy_dist != -1:
-            xDistToEnemy = self.enemy_x - self.X
-            yDistToEnemy = self.enemy_y - self.Y
+            x_dist_to_enemy = self.enemy_x - self.X
+            y_dist_to_enemy = self.enemy_y - self.Y
             theta = self.findAngle()
-            wallPreEnemy = self.wallBetweenTarget()
-
+            wall_pre_enemy = self.wallBetweenTarget()
         else:
             return -1
-
-        if self.enemy_dist and xDistToEnemy > 0 and yDistToEnemy > 0 and not wallPreEnemy:  # Q1
+        if self.enemy_dist and x_dist_to_enemy > 0 and y_dist_to_enemy > 0 and not wall_pre_enemy:
             direction = 1
-        elif self.enemy_dist and xDistToEnemy < 0 and yDistToEnemy > 0 and not wallPreEnemy:  # Q2
+        elif self.enemy_dist and x_dist_to_enemy < 0 and y_dist_to_enemy > 0 and not wall_pre_enemy:
             direction = 2
-        elif self.enemy_dist and xDistToEnemy < 0 and yDistToEnemy < 0 and not wallPreEnemy:  # Q3
+        elif self.enemy_dist and x_dist_to_enemy < 0 and y_dist_to_enemy < 0 and not wall_pre_enemy:
             direction = 3
-        elif self.enemy_dist and xDistToEnemy > 0 and yDistToEnemy < 0 and not wallPreEnemy:  # Q4
+        elif self.enemy_dist and x_dist_to_enemy > 0 and y_dist_to_enemy < 0 and not wall_pre_enemy:
             direction = 4
-
         return direction
 
 
-class ActionGene():
+class ActionGene:
     def __init__(self, gene, agent):
-        if gene[0] == False:  # Indicates jump gene
+        if gene[0] is False:
             print(gene)
             print("Unexpected action gene found")
             return None
-
-        self.agent = agent  # Parent agent
-
+        self.agent = agent
         self.shoot = gene[1]
-        self.thrust = (1 if gene[2] else 0)
-        self.turn_quantity = int((gene[3] + 3) * 2) # Ranges from 6-20 in steps of 3.
+        self.thrust = 1 if gene[2] else 0
+        self.turn_quantity = int((gene[3] + 3) * 2)
         self.turn_target = gene[4]
-
         self.act()
 
     def turn(self):
-        # Pick turn target based on numerical identifier from loop.
-        # Examples from paper: nearestShip, oppsoiteClosestWall, most dangerous bullet etc
         match self.turn_target:
             case 0:
-                # turn towards closest wall heading
                 angle = agent.findMinWallAngle(agent.headingFeelers)
-
                 if angle < 0:
-                    ai.turn(-1*self.turn_quantity)
+                    ai.turn(-1 * self.turn_quantity)
                 elif angle > 0:
                     ai.turn(self.turn_quantity)
             case 1:
-                # turn away from closest wall heading
                 angle = agent.findMinWallAngle(agent.headingFeelers)
-
                 if angle > 0:
-                    ai.turn(-1*self.turn_quantity)
+                    ai.turn(-1 * self.turn_quantity)
                 elif angle < 0:
                     ai.turn(self.turn_quantity)
             case 2:
-                # turn towards furthest wall heading
                 angle = agent.findMaxWallAngle(agent.headingFeelers)
-
                 if angle < 0:
-                    ai.turn(-1*self.turn_quantity)
+                    ai.turn(-1 * self.turn_quantity)
                 elif angle > 0:
                     ai.turn(self.turn_quantity)
             case 3:
-                # turn away from furthest wall heading
                 angle = agent.findMaxWallAngle(agent.headingFeelers)
-
                 if angle > 0:
-                    ai.turn(-1*self.turn_quantity)
+                    ai.turn(-1 * self.turn_quantity)
                 elif angle < 0:
                     ai.turn(self.turn_quantity)
             case 4:
-                # turn towards enemy ship
-                if agent.enemy_dist != None:
-
+                if agent.enemy_dist is not None:
                     if agent.angle_to_enemy < 0:
-                        ai.turn(-1*self.turn_quantity)
+                        ai.turn(-1 * self.turn_quantity)
                     elif agent.angle_to_enemy > 0:
                         ai.turn(self.turn_quantity)
-
             case 5:
-                # turn away from enemy ship
-                if agent.enemy_dist != None:
-
+                if agent.enemy_dist is not None:
                     if agent.angle_to_enemy > 0:
-                        ai.turn(-1*self.turn_quantity)
+                        ai.turn(-1 * self.turn_quantity)
                     else:
                         ai.turn(self.turn_quantity)
-
             case 6:
-                # turn towards bullet
                 if agent.shot_x != -1:
                     if agent.angle_to_shot < 0:
-                        ai.turn(-1*self.turn_quantity)
+                        ai.turn(-1 * self.turn_quantity)
                     elif agent.angle_to_shot > 0:
                         ai.turn(self.turn_quantity)
-
             case 7:
-                # turn away from bullet
                 if agent.shot_x != -1:
                     if agent.angle_to_shot > 0:
-                        ai.turn(-1*self.turn_quantity)
+                        ai.turn(-1 * self.turn_quantity)
                     elif agent.angle_to_shot < 0:
                         ai.turn(self.turn_quantity)
 
@@ -477,18 +343,14 @@ def loop():
     global bot_name
     if agent is None:
         agent = CoreAgent(bot_name)
-
     agent.AI_Loop()
 
-    
+
 def main():
     global bot_name
     bot_name = "Core_Agent_{}".format(sys.argv[1])
-
     global agent
-
     agent = None
-
     ai.start(
         loop, ["-name", bot_name, "-join", "localhost"])
 

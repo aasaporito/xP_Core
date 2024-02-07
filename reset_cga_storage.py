@@ -1,5 +1,5 @@
 from core_controller import CoreAgent
 from chromosome import Evolver
 
-CoreAgent.createTracebackFolder()
+CoreAgent.create_traceback_folder()
 Evolver.createDataFolder()
