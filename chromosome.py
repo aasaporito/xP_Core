@@ -42,32 +42,32 @@ class Evolver():
             for loopIndex in range(len(chromosome1)):
                 loop = []  # Loop containing 16 genes
 
-                for geneIndex in range(len(chromosome1[loopIndex])):
+                for gene_index in range(len(chromosome1[loopIndex])):
                     gene = ""  # A 9 bit representation of a jump or action gene
-                    for bitIndex in range(0, len(chromosome1[loopIndex][geneIndex])):  # Start at one to not flip jump and actions  # noqa: E501
+                    for bitIndex in range(0, len(chromosome1[loopIndex][gene_index])):  # Start at one to not flip jump and actions  # noqa: E501
                         bit = ""
                         if 0 == random.randint(0, 1):  # Flip Bit!
-                            bit = chromosome1[loopIndex][geneIndex][bitIndex]
+                            bit = chromosome1[loopIndex][gene_index][bitIndex]
                         else:
-                            bit = chromosome2[loopIndex][geneIndex][bitIndex]
+                            bit = chromosome2[loopIndex][gene_index][bitIndex]
 
                         if bitIndex == 0:
-                            bit = chromosome1[loopIndex][geneIndex][bitIndex]
+                            bit = chromosome1[loopIndex][gene_index][bitIndex]
 
                         gene += bit
                     loop.append(gene)
                 new_chromosome.append(loop)
 
-            #print("Uniform Crossover Child: {}".format(new_chromosome))
+            # print("Uniform Crossover Child: {}".format(new_chromosome))
             child = new_chromosome
 
         else:
             print("Crossover error")
 
-        for geneIndex in range(len(child)):
-            if cls.isJumpGene(child[geneIndex]):
-                newJumpGene = chromosome1[0:5] + child[geneIndex][5:]
-                child[geneIndex] = newJumpGene
+        for gene_index in range(len(child)):
+            if cls.is_jump_gene(child[gene_index]):
+                newJumpGene = chromosome1[0:5] + child[gene_index][5:]
+                child[gene_index] = newJumpGene
         print("Chiild: {}".format(child))
         return child
 
@@ -78,11 +78,11 @@ class Evolver():
         for loopIndex in range(len(chromosome)):
             loop = []  # Loop containing 16 genes
 
-            for geneIndex in range(len(chromosome[loopIndex])):
-                gene = chromosome[loopIndex][geneIndex]
+            for gene_index in range(len(chromosome[loopIndex])):
+                gene = chromosome[loopIndex][gene_index]
                 new_gene = ""  # A 9 bit representation of a jump or action gene
 
-                if cls.isJumpGene(gene):  # If the gene is a jump gene
+                if cls.is_jump_gene(gene):  # If the gene is a jump gene
                     new_gene += gene[0:5]
                     #print(new_gene)
 
@@ -107,7 +107,7 @@ class Evolver():
 
     @classmethod
     # Returns true if a gene is jump gene
-    def isJumpGene(cls, gene):
+    def is_jump_gene(cls, gene):
 
         # Cases to accept both decoded and raw chromosomes
         if type(gene[0]) == bool:
@@ -116,7 +116,7 @@ class Evolver():
             return gene[0] == "1"
 
     @classmethod
-    def readChrome(cls, chrome):
+    def read_chrome(cls, chrome):
         loops = []
         for gene in chrome:
             #print("Current gene: {}".format(gene))
@@ -133,8 +133,8 @@ class Evolver():
                 # Structure: False, conditional index, jump to num
                     loop.append([False, conditional_index, loop_number])
 
-                    #print("Conditional loop: {}".format(conditional_index))
-                    #print("Loop number: {}".format(loop_number))
+                    # print("Conditional loop: {}".format(conditional_index))
+                    # print("Loop number: {}".format(loop_number))
 
                 else:  # Case for action chromosome
                     shoot = bool(int(instruction_gene[1]))
@@ -142,19 +142,15 @@ class Evolver():
                     turn_quantity = int(instruction_gene[3:6], 2)
                     turn_target = int(instruction_gene[6:], 2)
 
-                    # print("Shoot: {}".format(shoot))
-                    # print("Thrust: {}".format(thrust))
-                    # print("Turn Quantity: {}".format(turn_quantity))
-                    # print("Turn Target: {}" .format(turn_target))
-
                     # If first val is true, action gene
-                    loop.append([True, shoot, thrust, turn_quantity, turn_target])
+                    loop.append([True, shoot, thrust, turn_quantity,
+                                turn_target])
             loops.append(loop)
 
         return loops
 
     @classmethod
-    def generateChromosome(cls):
+    def generate_chromosome(cls):
         # Gene Size 9 bits
         # Loop size including conditional 8
         chromosome = []
@@ -179,7 +175,7 @@ class Evolver():
         return chromosome
 
     @classmethod
-    def writeChromosomeToFile(cls, chromosome, filename):
+    def write_chromosome_to_file(cls, chromosome, filename):
         dataPath = "data/" + filename
         # print(dataPath)
         # print(os.path.exists(dataPath))
@@ -189,7 +185,7 @@ class Evolver():
             file.write(str(chromosome))
 
     @classmethod
-    def logChromeosomeHistory(cls, chromosome, chrome_number, filename):
+    def log_chromosome_history(cls, chromosome, chrome_number, filename):
         dataPath = "data/chromosome_logs/" + filename
 
         with open(dataPath, "a") as f:
@@ -198,7 +194,7 @@ class Evolver():
     # Wipes data folder for each new run of core_controller
 
     @classmethod
-    def createDataFolder(cls):
+    def create_data_folder(cls):
         # Data folder
         try:
             shutil.rmtree("data/")

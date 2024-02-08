@@ -8,7 +8,7 @@ echo "Reset data and tracebacks folder";
 ./xpilots -map simple.xp -noquit -switchBase 1.0 +teams -maxRoundTime 60 -roundsToPlay 0 -resetOnHuman 1 -limitedLives -maxClientsPerIP 32 &
 sleep 2;
 # Set the number of instances you want to run
-num_instances=6;
+num_instances=2;
 
 # Loop to run multiple instances
 for ((i=1; i<=$num_instances; i++)); do
