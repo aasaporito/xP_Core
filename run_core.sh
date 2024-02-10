@@ -13,7 +13,7 @@ num_instances=2;
 # Loop to run multiple instances
 for ((i=1; i<=$num_instances; i++)); do
     echo "Running instance $i"
-    python3 core_controller.py "$i" &
+    ssh lab02 -X python3 core_controller.py "$i" &
     wait 1
 done
 
