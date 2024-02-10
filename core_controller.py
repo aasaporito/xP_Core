@@ -376,7 +376,7 @@ def main():
     global agent
     agent = None
     ai.start(
-        loop, ["-name", bot_name, "-join", "localhost"])
+        loop, ["-name", bot_name, "-join", "lab01"])
 
 
 if __name__ == "__main__":
