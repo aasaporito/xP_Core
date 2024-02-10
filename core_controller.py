@@ -372,7 +372,7 @@ def loop():
 
 def main():
     global bot_name
-    bot_name = "Core_Agent_{}".format(sys.argv[1])
+    bot_name = "CA_{}".format(sys.argv[1])
     global agent
     agent = None
     ai.start(
