@@ -11,8 +11,8 @@ sleep 2;
 num_instances=2;
 
 echo "Running instances"
-python3 ~/Documents/xP_Core/core_controller.py "$($RANDOM)" &
-python3 ~/Documents/xP_Core/core_controller.py "$($RANDOM)" &
+python3 ~/Documents/xP_Core/core_controller.py $RANDOM &
+python3 ~/Documents/xP_Core/core_controller.py $RANDOM &
 
 # ssh lab02 -X &
 # python3 ~/Documents/xP_Core/core_controller.py "2" &
