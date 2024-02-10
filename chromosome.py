@@ -1,6 +1,5 @@
 import random
 import os
-import shutil
 
 
 class Evolver():
@@ -173,15 +172,3 @@ class Evolver():
 
         with open(dataPath, "a") as f:
             f.write("Iteration {}: {} \n".format(chrome_number, chromosome)) 
-
-    @classmethod
-    def create_data_folder(cls):
-        # Data folder
-        try:
-            shutil.rmtree("data/")
-        except Exception:
-            pass
-
-        os.mkdir("data/")
-        os.mkdir("data/chromosome_logs/")
-        print("Reset data folder")

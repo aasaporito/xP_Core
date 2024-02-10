@@ -4,7 +4,6 @@ import random
 import os
 import sys
 import traceback
-import shutil
 from chromosome import Evolver
 
 
@@ -57,14 +56,6 @@ class CoreAgent:
         self.generate_feelers(10)
         print("Alive!")
         self.frames_dead = 0
-
-    @classmethod
-    def create_traceback_folder(cls):
-        try:
-            shutil.rmtree("tracebacks/")
-        except Exception:
-            pass
-        os.mkdir("tracebacks/")
 
     def AI_Loop(self):
         try:
