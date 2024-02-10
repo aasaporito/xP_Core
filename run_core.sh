@@ -10,13 +10,22 @@ sleep 2;
 # Set the number of instances you want to run
 num_instances=2;
 
-# Loop to run multiple instances
-for ((i=1; i<=$num_instances; i++)); do
-    echo "Running instance $i"
-    ssh lab02 -X &
-    python3 ~/Documents/xP_Core/core_controller.py "$i" &
-    wait 1
-done
+echo "Running instances"
+python3 ~/Documents/xP_Core/core_controller.py "0" &
+python3 ~/Documents/xP_Core/core_controller.py "1" &
+
+ssh lab02 -X &
+python3 ~/Documents/xP_Core/core_controller.py "2" &
+python3 ~/Documents/xP_Core/core_controller.py "3" &
+
+ssh lab03 -X &
+python3 ~/Documents/xP_Core/core_controller.py "4" &
+python3 ~/Documents/xP_Core/core_controller.py "5" &
+
+ssh lab04 -X &
+python3 ~/Documents/xP_Core/core_controller.py "6" &
+python3 ~/Documents/xP_Core/core_controller.py "7" &
+
 
 # Wait for all instances to finish
 wait;
