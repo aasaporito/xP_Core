@@ -24,6 +24,7 @@ echo "Running instances"
 python3 ~/Documents/xP_Core/core_controller.py $RANDOM &
 python3 ~/Documents/xP_Core/core_controller.py $RANDOM &
 
+# Labs1-20, slrm 1,3 4-14, 17
 # ssh lab02 -X &
 # python3 ~/Documents/xP_Core/core_controller.py "2" &
 # python3 ~/Documents/xP_Core/core_controller.py "3" &
