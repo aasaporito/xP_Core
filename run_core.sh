@@ -11,20 +11,20 @@ sleep 2;
 num_instances=2;
 
 echo "Running instances"
-python3 ~/Documents/xP_Core/core_controller.py "0" &
-python3 ~/Documents/xP_Core/core_controller.py "1" &
+python3 ~/Documents/xP_Core/core_controller.py "$($RANDOM)" &
+python3 ~/Documents/xP_Core/core_controller.py "$($RANDOM)" &
 
-ssh lab02 -X &
-python3 ~/Documents/xP_Core/core_controller.py "2" &
-python3 ~/Documents/xP_Core/core_controller.py "3" &
+# ssh lab02 -X &
+# python3 ~/Documents/xP_Core/core_controller.py "2" &
+# python3 ~/Documents/xP_Core/core_controller.py "3" &
 
-ssh lab03 -X &
-python3 ~/Documents/xP_Core/core_controller.py "4" &
-python3 ~/Documents/xP_Core/core_controller.py "5" &
+# ssh lab03 -X &
+# python3 ~/Documents/xP_Core/core_controller.py "4" &
+# python3 ~/Documents/xP_Core/core_controller.py "5" &
 
-ssh lab04 -X &
-python3 ~/Documents/xP_Core/core_controller.py "6" &
-python3 ~/Documents/xP_Core/core_controller.py "7" &
+# ssh lab04 -X &
+# python3 ~/Documents/xP_Core/core_controller.py "6" &
+# python3 ~/Documents/xP_Core/core_controller.py "7" &
 
 
 # Wait for all instances to finish
