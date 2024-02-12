@@ -44,6 +44,7 @@ python3 ~/Documents/xP_Core/core_controller.py $RANDOM &
 
 for server in "${servers[@]}"
 do
+    echo "Connecting to: "$server 
     ssh -X asaporito@$server
     for i in {0..2..1}
     do
