@@ -19,24 +19,40 @@ echo "Starting Xpilots Server";
 sleep 2;
 # Set the number of instances you want to run
 num_instances=2;
+machines=(
+    lab02
+    lab03
+    lab04
+    lab05
+    lab07
+    lab08
+    lab09
+    lab10
+    lab11
+    lab12
+    lab13
+    lab14
+    lab15
+    lab16
+    lab17
+    )
 
 echo "Running instances"
 python3 ~/Documents/xP_Core/core_controller.py $RANDOM &
 python3 ~/Documents/xP_Core/core_controller.py $RANDOM &
 
+
+for server in "${servers[@]}"
+do
+    ssh -X asaporito@$server
+    for i in {0..2..1}
+    do
+        python3 ~/Documents/xP_Core/core_controller.py $RANDOM &
+    done
+done
+
 # Labs1-20, slrm 1,3 4-14, 17
 # ssh lab02 -X &
-# python3 ~/Documents/xP_Core/core_controller.py "2" &
-# python3 ~/Documents/xP_Core/core_controller.py "3" &
-
-# ssh lab03 -X &
-# python3 ~/Documents/xP_Core/core_controller.py "4" &
-# python3 ~/Documents/xP_Core/core_controller.py "5" &
-
-# ssh lab04 -X &
-# python3 ~/Documents/xP_Core/core_controller.py "6" &
-# python3 ~/Documents/xP_Core/core_controller.py "7" &
-
 
 # Wait for all instances to finish
 wait;
