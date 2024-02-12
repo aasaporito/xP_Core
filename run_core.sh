@@ -44,12 +44,13 @@ python3 ~/Documents/xP_Core/core_controller.py $RANDOM &
 
 for server in "${servers[@]}"
 do
-    echo "Connecting to: "$server 
-    ssh -X asaporito@$server
+    echo "Connecting to: "$server;
+    ssh -X -J asaporito@grid asaporito@$server;
     for i in {0..2..1}
     do
         python3 ~/Documents/xP_Core/core_controller.py $RANDOM &
     done
+    exit;
 done
 
 # Labs1-20, slrm 1,3 4-14, 17
