@@ -46,7 +46,7 @@ python3 ~/Documents/xP_Core/core_controller.py $RANDOM &
 for machine in "${machines[@]}"
 do
     echo "Connecting to: "$machine;
-    ssh -X asaporito@$machine;
+    ssh -X -J asaporito@grid asaporito@$machine;
     for i in {0..2..1}
     do
         echo "Launching instance"
