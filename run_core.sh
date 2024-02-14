@@ -14,9 +14,10 @@ echo "Purged traceback folder"
 # Start Server
 echo "Starting Xpilots Server";
 # switchBase 1 = 100% probability to swap bases on death, + teams disables teams
-
+ssh -X -J asaporito@grid asaporito@lab01;
 ./xpilots -map simple.xp -noquit -switchBase 1.0 +teams -maxRoundTime 60 -roundsToPlay 0 -resetOnHuman 1 -limitedLives -maxClientsPerIP 32 &
 sleep 2;
+
 # Set the number of instances you want to run
 num_instances=2;
 machines=(
