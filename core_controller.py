@@ -55,7 +55,51 @@ class CoreAgent:
         self.initialize_cga()
         self.generate_feelers(10)
         print("Alive!")
-        self.frames_dead = 0        
+        self.frames_dead = 0
+
+    def AI_Loop(self):
+        try:
+            if ai.selfAlive() == 1:
+                self.frames_dead = 0
+                self.update_agent_data()
+                self.update_enemy_data()
+                self.update_bullet_data()
+                self.update_score()
+                self.crossover_completed = False
+                gene = self.current_loop[self.current_gene_idx]
+
+                print("Gene: {}".format(gene))
+                if Evolver.is_jump_gene(gene):
+                    if self.check_conditional(gene[1]):
+                        self.current_loop_idx = gene[2]
+                        self.current_loop = \
+                            self.dec_chromosome[self.current_loop_idx]
+                        self.current_gene_idx = 0
+                        return
+                    else:
+                        self.increment_gene_idx()
+
+                gene = self.current_loop[self.current_gene_idx]
+                ActionGene(gene, self)
+                self.increment_gene_idx()
+            else:
+                self.process_server_feed()
+                self.frames_dead += 1
+                if self.frames_dead >= 5:
+                    self.was_killed()
+                    self.frames_dead = -2000
+
+        except Exception as e:
+            print("Exception")
+            print(str(e))
+            traceback.print_exc()
+            traceback_str = traceback.format_exc()
+            with open("tracebacks/traceback_{}.txt".format(self.bot_name), "w") as f:
+                f.write(traceback_str)
+                f.write(str(self.bin_chromosome))
+                f.write(str(self.dec_chromosome))
+                f.write(str(self.current_loop))
+            ai.quitAI()
 
     def increment_gene_idx(self):
         self.current_gene_idx = (self.current_gene_idx + 1) \
@@ -314,48 +358,7 @@ def loop():
     global bot_name
     if agent is None:
         agent = CoreAgent(bot_name)
-    try:
-        if ai.selfAlive() == 1:
-            agent.frames_dead = 0
-            agent.update_agent_data()
-            agent.update_enemy_data()
-            agent.update_bullet_data()
-            agent.update_score()
-            agent.crossover_completed = False
-            gene = agent.current_loop[agent.current_gene_idx]
-
-            print("Gene: {}".format(gene))
-            if Evolver.is_jump_gene(gene):
-                if agent.check_conditional(gene[1]):
-                    agent.current_loop_idx = gene[2]
-                    agent.current_loop = \
-                        agent.dec_chromosome[agent.current_loop_idx]
-                    agent.current_gene_idx = 0
-                    return
-                else:
-                    agent.increment_gene_idx()
-
-            gene = agent.current_loop[agent.current_gene_idx]
-            ActionGene(gene, agent)
-            agent.increment_gene_idx()
-        else:
-            agent.process_server_feed()
-            agent.frames_dead += 1
-            if agent.frames_dead >= 5:
-                agent.was_killed()
-                agent.frames_dead = -2000
-
-    except Exception as e:
-        print("Exception")
-        print(str(e))
-        traceback.print_exc()
-        traceback_str = traceback.format_exc()
-        with open("tracebacks/traceback_{}.txt".format(agent.bot_name), "w") as f:
-            f.write(traceback_str)
-            f.write(str(agent.bin_chromosome))
-            f.write(str(agent.dec_chromosome))
-            f.write(str(agent.current_loop))
-        ai.quitAI()
+    agent.AI_Loop()
 
 
 def main():

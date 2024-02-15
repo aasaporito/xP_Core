@@ -40,7 +40,7 @@ machines=(
 #python3 ~/Documents/xP_Core/core_controller.py $RANDOM &
 
 
-for machine in "${machines[@]}"
+for machine in "${machines[@]}" 
 do
     echo "Connecting to: "$machine;
     ssh -X -J asaporito@grid asaporito@$machine "bash -s" < ~/Documents/xP_Core/launch_agent.sh &
