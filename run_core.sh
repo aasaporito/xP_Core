@@ -14,7 +14,7 @@ echo "Purged traceback folder"
 # Start Server
 echo "Starting Xpilots Server";
 # switchBase 1 = 100% probability to swap bases on death, + teams disables teams
-ssh -X -J asaporito@grid asaporito@lab01 "bash -s" < "~/Documents/xP_Core/start_server.sh" &
+ssh -X -J asaporito@grid asaporito@lab01 "bash -s" < ~/Documents/xP_Core/start_server.sh &
 sleep 2;
 
 # Set the number of instances you want to run
@@ -44,7 +44,7 @@ machines=(
 for machine in "${machines[@]}"
 do
     echo "Connecting to: "$machine;
-    ssh -X -J asaporito@grid asaporito@$machine "bash -s" < "~/Documents/xP_Core/launch_agent.sh" &
+    ssh -X -J asaporito@grid asaporito@$machine "bash -s" < ~/Documents/xP_Core/launch_agent.sh &
 done
 
 # Labs1-20, slrm 1,3 4-14, 17
