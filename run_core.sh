@@ -43,7 +43,7 @@ machines=(
 for machine in "${machines[@]}" 
 do
     echo "Connecting to: "$machine;
-    ssh -X -J asaporito@grid asaporito@$machine "bash -s" < ~/Documents/xP_Core/launch_agent.sh &
+    ssh -X -J asaporito@grid asaporito@$machine "nohup bash -s" < ~/Documents/xP_Core/launch_agent.sh &
 done
 
 # Labs1-20, slrm 1,3 4-14, 17
