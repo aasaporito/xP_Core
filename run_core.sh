@@ -28,6 +28,7 @@ machines=(
 #python3 ~/Documents/xP_Core/core_controller.py $RANDOM &
 #python3 ~/Documents/xP_Core/core_controller.py $RANDOM &
 
+ssh -X asaporito@lab02 "~/Documents/xP_Core/core_controller.py $RANDOM"
 
 for machine in "${machines[@]}" 
 do
