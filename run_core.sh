@@ -15,26 +15,27 @@ echo "Purged traceback folder"
 echo "Starting Xpilots Server";
 # switchBase 1 = 100% probability to swap bases on death, + teams disables teams
 ~/Documents/xP_Core/xpilots -map ~/Documents/xP_Core/simple.xp -noquit -switchBase 1.0 +teams -maxRoundTime 60 -roundsToPlay 0 -resetOnHuman 1 -limitedLives -maxClientsPerIP 32 &
-sleep 2;
+
 
 # Set the number of instances you want to run
-machines=(
-    lab02
-    lab03
+#machines=(
+#    lab02
+#    lab03
 
-    )
+#    )
 
 #echo "Running instances"
 #python3 ~/Documents/xP_Core/core_controller.py $RANDOM &
 #python3 ~/Documents/xP_Core/core_controller.py $RANDOM &
 
-ssh -X asaporito@lab02 "~/Documents/xP_Core/core_controller.py $RANDOM"
-
-for machine in "${machines[@]}" 
-do
-    echo "Connecting to: "$machine;
-    ssh -X asaporito@$machine "~/Documents/xP_Core/core_controller.py $RANDOM" &
-done
+echo "Pre"
+ssh -X asaporito@lab02 "~/Documents/xP_Core/core_controller.py $RANDOM" &
+echo "Post"
+#for machine in "${machines[@]}" 
+#do
+#    echo "Connecting to: "$machine;
+#    ssh -X asaporito@$machine "~/Documents/xP_Core/core_controller.py $RANDOM" &
+#done
 
 # Labs1-20, slrm 1,3 4-14, 17
 # ssh lab02 -X &
