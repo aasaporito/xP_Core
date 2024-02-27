@@ -43,9 +43,9 @@ echo "Starting Agent 9-10 on slurm05"
 ssh -X slurm05 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
 ssh -X slurm05 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
 
-echo "Starting Agent 11-12 on slurm06"
-ssh -X slurm06 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
-ssh -X slurm06 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
+#echo "Starting Agent 11-12 on slurm06"
+#ssh -X slurm06 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
+#ssh -X slurm06 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
 
 #echo "Starting Agent 13-14 on slurm07"
 #ssh -X slurm07 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
