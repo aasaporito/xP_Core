@@ -17,30 +17,15 @@ echo "Starting Xpilots Server";
 ~/Documents/xP_Core/xpilots -map ~/Documents/xP_Core/simple.xp -noquit -switchBase 1.0 +teams -maxRoundTime 60 -roundsToPlay 0 -resetOnHuman 1 -limitedLives -maxClientsPerIP 32 &
 
 
-# Set the number of instances you want to run
-#machines=(
-#    lab02
-#    lab03
+echo "Starting Agent 1..."
+python3 ~/Documents/xP_Core/core_controller.py $RANDOM >/dev/null 2>&1 &
+echo "Starting Agent 2..."
+python3 ~/Documents/xP_Core/core_controller.py $RANDOM >/dev/null 2>&1 &
 
-#    )
+echo "Starting Agent 3-4"
+ssh -X lab03 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
+ssh -X lab03 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
 
-#echo "Running instances"
-#python3 ~/Documents/xP_Core/core_controller.py $RANDOM &
-#python3 ~/Documents/xP_Core/core_controller.py $RANDOM &
-
-echo "Pre"
-ssh -X asaporito@lab02 "~/Documents/xP_Core/core_controller.py $RANDOM" &
-echo "Post"
-#for machine in "${machines[@]}" 
-#do
-#    echo "Connecting to: "$machine;
-#    ssh -X asaporito@$machine "~/Documents/xP_Core/core_controller.py $RANDOM" &
-#done
-
-# Labs1-20, slrm 1,3 4-14, 17
-# ssh lab02 -X &
-
-# Wait for all instances to finish
-wait;
-
-echo "All $num_instances instances have been started.";
+echo "Starting Agent 5-6"
+ssh -X lab05 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
+ssh -X lab05 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
