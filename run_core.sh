@@ -27,9 +27,9 @@ python3 ~/Documents/xP_Core/core_controller.py $RANDOM >/dev/null 2>&1 &
 
 echo "Starting Agents on slurm servers"
 
-echo "Starting Agent 3-4 on slurm02"
-ssh -X slurm02 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
-ssh -X slurm02 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
+#echo "Starting Agent 3-4 on slurm02"
+#ssh -X slurm02 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
+#ssh -X slurm02 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
 
 echo "Starting Agent 5-6 on slurm03"
 ssh -X slurm03 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
@@ -47,9 +47,9 @@ echo "Starting Agent 11-12 on slurm06"
 ssh -X slurm06 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
 ssh -X slurm06 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
 
-echo "Starting Agent 13-14 on slurm07"
-ssh -X slurm07 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
-ssh -X slurm07 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
+#echo "Starting Agent 13-14 on slurm07"
+#ssh -X slurm07 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
+#ssh -X slurm07 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
 
 echo "Starting Agent 15-16 on slurm08"
 ssh -X slurm08 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
@@ -71,9 +71,9 @@ echo "Starting Agent 23-24 on slurm12"
 ssh -X slurm12 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
 ssh -X slurm12 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
 
-echo "Starting Agent 25-26 on slurm13"
-ssh -X slurm13 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
-ssh -X slurm13 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
+#echo "Starting Agent 25-26 on slurm13"
+#ssh -X slurm13 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
+#ssh -X slurm13 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
 
 echo "Starting Agent 27-28 on slurm14"
 ssh -X slurm14 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
