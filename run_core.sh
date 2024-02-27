@@ -35,3 +35,35 @@ ssh -X slurm04 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
 echo "Starting Agent 7-8"
 ssh -X slurm07 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
 ssh -X slurm07 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
+
+echo "Starting Agent 9-10"
+ssh -X slurm08 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
+ssh -X slurm08 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
+
+echo "Starting Agent 11-12"
+ssh -X slurm10 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
+ssh -X slurm10 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
+
+echo "Starting Agent 13-14"
+ssh -X slurm11 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
+ssh -X slurm11 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
+
+echo "Starting Agent 15-16"
+ssh -X slurm12 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
+ssh -X slurm12 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
+
+echo "Starting Agent 17-18"
+ssh -X slurm14 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
+ssh -X slurm14 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
+
+echo "Starting Agent 19-20"
+ssh -X slurm17 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
+ssh -X slurm17 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
+
+
+
+
+
+
+
+# TODO :: Add rest of slurms
