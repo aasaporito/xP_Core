@@ -167,6 +167,7 @@ class CoreAgent:
 
             cross_over_child = Evolver.crossover(self.bin_chromosome, new_chromosome)
             mutated_child = Evolver.mutate(cross_over_child, self.MUT_RATE)
+            print(mutated_child)
             self.initialize_cga(mutated_child)
             self.crossover_completed = True
             self.self_destructed = False
