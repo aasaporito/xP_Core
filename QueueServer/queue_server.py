@@ -37,7 +37,7 @@ def get_queues():
 
 
 @app.get("/req_{num}")
-def read_num(num):
+def get_chrom(num):
     num = int(num) - 1
 
     if num < 0 or num > 4:

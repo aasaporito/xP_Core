@@ -11,6 +11,9 @@ mkdir ~/Documents/xP_Core/tracebacks;
 echo "Purged data folder"
 echo "Purged traceback folder"
 
+echo "Launching Queue Server"
+python3 ~/Documents/xP_Core/QueueServer/queue_server.py" &
+
 # Start Server
 echo "Starting Xpilots Server";
 # switchBase 1 = 100% probability to swap bases on death, + teams disables teams

@@ -5,10 +5,12 @@ import os
 import sys
 import traceback
 from chromosome import Evolver
+import requests
 
 
 class CoreAgent:
     def __init__(self, bot_name):
+        self.QUEUE_ADDR = "http://136.244.224.61:8000/"
         self.MUT_RATE = 300
         self.GENES_PER_LOOP = 8
 
@@ -238,6 +240,29 @@ class CoreAgent:
             direction = 4
         return direction
 
+    def push_chrom(self, quadrant, chromosome):
+        data = {"quadrant": quadrant, "chromo": chromosome}
+        re = requests.post(self.QUEUE_ADDR + "post", json=data)
+
+        if re.status_code == 200:
+            print("Sucessfully pushed to QS")
+        else:
+            print("Error pushing to QS")
+
+    def req_chrom(self, quadrant):
+        re = requests.get(self.QUEUE_ADDR + "req_{}".format(quadrant))
+
+        if re.json() == -1:
+            print("No available chromosome, generating new chromosome")
+            return Evolver.generate_chromosome()
+
+        print("Succesfully recieved chromosome")
+        return re.json()["chromosome"]
+
+    def ping_server(self):
+        re = requests.get(self.QUEUE_ADDR + "is_alive")
+
+    
 
 class ActionGene:
     def __init__(self, gene, agent):
