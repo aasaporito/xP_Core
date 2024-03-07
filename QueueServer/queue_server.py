@@ -53,4 +53,4 @@ async def post_data(chromosome: Chromosome):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="NL210-Lin10138", port=8000)
+    uvicorn.run(app, host="136.244.224.61", port=8000)
