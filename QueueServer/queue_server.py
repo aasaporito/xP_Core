@@ -13,8 +13,22 @@ queue_2 = []
 queue_3 = []
 queue_4 = []
 
+stats = {"connections": 0, "error_requests": 0}
+
+
 queues = [queue_1, queue_2, queue_3, queue_4]
 app = FastAPI() 
+
+
+@app.get("/stats")
+def get_stats():
+    return stats
+
+
+@app.get("/is_alive")
+def is_alive():
+    stats["connections"] += 1
+    return {0}
 
 
 @app.get("/check_queues")
@@ -27,9 +41,11 @@ def read_num(num):
     num = int(num) - 1
 
     if num < 0 or num > 4:
+        stats["error_requests"] += 1
         return {-1}
 
     if len(queues[num]) == 0:
+        stats["error_requests"] += 1
         return {-1}
 
     chromosome = queues[num].pop(0)
@@ -38,6 +54,9 @@ def read_num(num):
 
 @app.post("/post")
 async def post_data(chromosome: Chromosome):
+    if chromosome.quadrant < 1 or chromosome.quadrant > 4:
+        stats["error_requests"] += 1
+
     if chromosome.quadrant == 1:
         queue_1.append(chromosome.chromo)
     elif chromosome.quadrant == 2:
