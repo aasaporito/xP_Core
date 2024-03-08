@@ -20,6 +20,8 @@ class CoreAgent:
         self.headingFeelers = []
         self.trackingFeelers = []
 
+        self.SPAWN_QUAD = None
+
         self.X = -1
         self.Y = -1
         self.heading = 90.0
@@ -260,9 +262,26 @@ class CoreAgent:
         return re.json()["chromosome"]
 
     def ping_server(self):
-        re = requests.get(self.QUEUE_ADDR + "is_alive")
+        requests.get(self.QUEUE_ADDR + "is_alive")
 
-    
+    def set_spawn_quad(self):
+        if agent.SPAWN_QUAD is None and agent.X != -1:
+            SPAWN_X = agent.X - 4500
+            SPAWN_Y = agent.Y - 4500
+            print("X: {}".format(SPAWN_X))
+            print("Y: {}".format(SPAWN_Y))
+
+            if SPAWN_X >= 0 and SPAWN_Y >= 0:
+                agent.SPAWN_QUAD = 1
+            elif SPAWN_X < 0 and SPAWN_Y >= 0:
+                agent.SPAWN_QUAD = 2
+            elif SPAWN_X < 0 and SPAWN_Y < 0:
+                agent.SPAWN_QUAD = 3
+            else: 
+                agent.SPAWN_QUAD = 4
+
+        return agent.SPAWN_QUAD
+
 
 class ActionGene:
     def __init__(self, gene, agent):
@@ -342,6 +361,8 @@ def loop():
         agent = CoreAgent(bot_name)
     try:
         if ai.selfAlive() == 1:
+            print("Spawn Quadrant: {} ".format(agent.set_spawn_quad()))
+
             agent.frames_dead = 0
             agent.update_agent_data()
             agent.update_enemy_data()
@@ -367,6 +388,9 @@ def loop():
         else:
             agent.process_server_feed()
             agent.frames_dead += 1
+            agent.SPAWN_QUAD = None
+            agent.X = -1
+            agent.Y = -1
             if agent.frames_dead >= 5:
                 agent.was_killed()
                 agent.frames_dead = -2000
@@ -384,13 +408,14 @@ def loop():
         ai.quitAI()
 
 
+# SLURM 01: NL210-Lin10138
 def main():
     global bot_name
     bot_name = "CA_{}".format(sys.argv[1])
     global agent
     agent = None
     ai.start(
-        loop, ["-name", bot_name, "-join", "NL210-Lin10138"])
+        loop, ["-name", bot_name, "-join", "localhost"])
 
 
 if __name__ == "__main__":
