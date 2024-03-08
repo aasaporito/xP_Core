@@ -48,7 +48,7 @@ def get_chrom(num):
         return {"chromosome": -1}
 
     if len(queues[num]) == 0:
-        print("Failed to fetch chromosome from Q:{}".format(num + 1))
+        print("Failed to fetch new chromosome from Q:{}".format(num + 1))
         stats["error_requests"] += 1
         return {"chromosome": -1}
 
