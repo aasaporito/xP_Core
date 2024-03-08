@@ -1,6 +1,6 @@
 import random
 import os
-
+import json
 
 class Evolver():
     @classmethod
@@ -164,7 +164,7 @@ class Evolver():
     def write_chromosome_to_file(cls, chromosome, filename):
         dataPath = "data/" + filename
         with open(dataPath, "w") as file:
-            file.write(str(chromosome))
+            json.dump(chromosome, file)
 
     @classmethod
     def log_chromosome_history(cls, chromosome, chrome_number, filename):
