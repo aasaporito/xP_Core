@@ -418,7 +418,7 @@ def loop():
                         agent.increment_gene_idx()
 
                 gene = agent.current_loop[agent.current_gene_idx]
-                #ActionGene(gene, agent)
+                ActionGene(gene, agent)
                 agent.increment_gene_idx()
             else:
                 agent.update_agent_data()
