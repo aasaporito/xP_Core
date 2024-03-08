@@ -12,7 +12,7 @@ echo "Purged data folder"
 echo "Purged traceback folder"
 
 echo "Launching Queue Server"
-python3 "~/Documents/xP_Core/QueueServer/queue_server.py" &
+python3 "~/Documents/xP_Core/QueueServer/queue_server.py" > queue_server.log &
 
 # Start Server
 echo "Starting Xpilots Server";
@@ -44,6 +44,7 @@ ssh -X slurm03 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
 ssh -X slurm03 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
 ssh -X slurm03 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
 
+tail queue_server.log
 # echo "Starting Agent 7-8 on slurm04"
 # ssh -X slurm04 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
 # ssh -X slurm04 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
