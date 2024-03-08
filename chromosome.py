@@ -162,13 +162,13 @@ class Evolver():
 
     @classmethod
     def write_chromosome_to_file(cls, chromosome, filename):
-        dataPath = "data/" + filename
+        dataPath = "~/Documents/xP_Core/data/" + filename
         with open(dataPath, "w") as file:
             json.dump(chromosome, file)
 
     @classmethod
     def log_chromosome_history(cls, chromosome, chrome_number, filename):
-        dataPath = "data/chromosome_logs/" + filename
+        dataPath = "~/Documents/xP_Core/data/chromosome_logs/" + filename
 
         with open(dataPath, "a") as f:
             f.write("Iteration {}: {} \n".format(chrome_number, chromosome)) 
