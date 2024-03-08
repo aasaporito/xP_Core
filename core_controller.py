@@ -6,10 +6,11 @@ import sys
 import traceback
 from chromosome import Evolver
 import requests
-
+import json
 
 class CoreAgent:
     def __init__(self, bot_name):
+        #self.QUEUE_ADDR = "http://localhost:8000/"
         self.QUEUE_ADDR = "http://136.244.224.61:8000/"
         self.MUT_RATE = 300
         self.GENES_PER_LOOP = 8
@@ -56,10 +57,10 @@ class CoreAgent:
         self.shot_y = -1
         self.angle_to_shot = -1
 
-        self.initialize_cga()
         self.generate_feelers(10)
-        print("Alive!")
-        self.frames_dead = 0        
+        self.frames_dead = 0       
+
+        self.ping_server() 
 
     def increment_gene_idx(self):
         self.current_gene_idx = (self.current_gene_idx + 1) \
@@ -114,9 +115,13 @@ class CoreAgent:
         self.heading = float(ai.selfHeadingDeg())
         self.tracking = float(ai.selfTrackingDeg())
 
-    def initialize_cga(self, input_chrome=Evolver.generate_chromosome()):
+    def initialize_cga(self, quadrant):
+
+        fetched_chromosome = self.req_chrom(int(quadrant))
+        print(fetched_chromosome)
+
         self.chromosome_iteration += 1
-        self.bin_chromosome = input_chrome
+        self.bin_chromosome = fetched_chromosome
         self.dec_chromosome = Evolver.read_chrome(self.bin_chromosome)
         print("Chromosome: {}".format(self.bin_chromosome))
 
@@ -126,10 +131,10 @@ class CoreAgent:
         self.current_loop_idx = 0
         self.current_loop = self.dec_chromosome[0]
         self.current_gene_idx = 0
-
-        Evolver.write_chromosome_to_file(self.bin_chromosome, "{}.txt".format(self.bot_name))
-        Evolver.log_chromosome_history(self.bin_chromosome, self.chromosome_iteration,
-                                      "{}_history.txt".format(self.bot_name))
+        
+        self.write_soul_data(quadrant)
+        #Evolver.log_chromosome_history(self.bin_chromosome, self.chromosome_iteration,
+        #                              "{}_history.txt".format(self.bot_name))
 
     def process_server_feed(self):
         self.feed_history = []
@@ -157,22 +162,44 @@ class CoreAgent:
         elif victim == self.bot_name:
             self.last_death = output
 
+    def write_soul_data(self, quadrant):
+        output = [str(quadrant), self.bin_chromosome]
+        Evolver.write_chromosome_to_file(output, "{}.json"
+                                         .format(self.bot_name))
+
     def was_killed(self):
         print(self.last_death)
 
         if "null" in self.last_death:
+            self.bin_chromosome = None
+            self.SPAWN_QUAD = None
             return
-        if ai.selfAlive() == 0 and self.crossover_completed is False:
-            new_chromosome_file_name = "data/{}.txt".format(self.last_death[0])
-            new_chromosome = None
 
+        if ai.selfAlive() == 0 and self.crossover_completed is False:
+            new_chromosome_file_name = "data/{}.json".format(self.last_death[0])
+            new_chromosome = None
+            inp = None
+
+            print(new_chromosome_file_name)
             with open(new_chromosome_file_name, 'r') as f:
-                new_chromosome = eval(f.read())
+                inp = json.load(f)
+                print(inp)
+            new_chromosome = inp[1]
+            quadrant = inp[0]
 
             cross_over_child = Evolver.crossover(self.bin_chromosome, new_chromosome)
             mutated_child = Evolver.mutate(cross_over_child, self.MUT_RATE)
-            print(mutated_child)
-            self.initialize_cga(mutated_child)
+
+            # POST New chromosome
+            self.push_chrom(quadrant, mutated_child)
+
+            # Prep for fetching new chromosome
+            self.bin_chromosome = None
+            self.SPAWN_QUAD = None
+            # print(mutated_child)
+
+
+            #self.initialize_cga(quadrant)
             self.crossover_completed = True
             self.self_destructed = False
 
@@ -254,7 +281,7 @@ class CoreAgent:
     def req_chrom(self, quadrant):
         re = requests.get(self.QUEUE_ADDR + "req_{}".format(quadrant))
 
-        if re.json() == -1:
+        if re.json()["chromosome"] == -1:
             print("No available chromosome, generating new chromosome")
             return Evolver.generate_chromosome()
 
@@ -265,11 +292,12 @@ class CoreAgent:
         requests.get(self.QUEUE_ADDR + "is_alive")
 
     def set_spawn_quad(self):
+        print("X: {}".format(agent.X))
+        print("Y: {}".format(agent.Y))
+
         if agent.SPAWN_QUAD is None and agent.X != -1:
             SPAWN_X = agent.X - 4500
             SPAWN_Y = agent.Y - 4500
-            print("X: {}".format(SPAWN_X))
-            print("Y: {}".format(SPAWN_Y))
 
             if SPAWN_X >= 0 and SPAWN_Y >= 0:
                 agent.SPAWN_QUAD = 1
@@ -361,30 +389,39 @@ def loop():
         agent = CoreAgent(bot_name)
     try:
         if ai.selfAlive() == 1:
-            print("Spawn Quadrant: {} ".format(agent.set_spawn_quad()))
+            if agent.SPAWN_QUAD is None:
+                print("Spawn Quadrant: {} ".format(agent.set_spawn_quad()))
+            else:
+                agent.write_soul_data(agent.SPAWN_QUAD)
 
-            agent.frames_dead = 0
-            agent.update_agent_data()
-            agent.update_enemy_data()
-            agent.update_bullet_data()
-            agent.update_score()
-            agent.crossover_completed = False
-            gene = agent.current_loop[agent.current_gene_idx]
+            if agent.SPAWN_QUAD is not None and agent.bin_chromosome is None:
+                agent.initialize_cga(agent.SPAWN_QUAD)
 
-            print("Gene: {}".format(gene))
-            if Evolver.is_jump_gene(gene):
-                if agent.check_conditional(gene[1]):
-                    agent.current_loop_idx = gene[2]
-                    agent.current_loop = \
-                        agent.dec_chromosome[agent.current_loop_idx]
-                    agent.current_gene_idx = 0
-                    return
-                else:
-                    agent.increment_gene_idx()
+            if agent.bin_chromosome is not None:
+                agent.frames_dead = 0
+                agent.update_agent_data()
+                agent.update_enemy_data()
+                agent.update_bullet_data()
+                agent.update_score()
+                agent.crossover_completed = False
+                gene = agent.current_loop[agent.current_gene_idx]
 
-            gene = agent.current_loop[agent.current_gene_idx]
-            ActionGene(gene, agent)
-            agent.increment_gene_idx()
+                print("Gene: {}".format(gene))
+                if Evolver.is_jump_gene(gene):
+                    if agent.check_conditional(gene[1]):
+                        agent.current_loop_idx = gene[2]
+                        agent.current_loop = \
+                            agent.dec_chromosome[agent.current_loop_idx]
+                        agent.current_gene_idx = 0
+                        return
+                    else:
+                        agent.increment_gene_idx()
+
+                gene = agent.current_loop[agent.current_gene_idx]
+                #ActionGene(gene, agent)
+                agent.increment_gene_idx()
+            else:
+                agent.update_agent_data()
         else:
             agent.process_server_feed()
             agent.frames_dead += 1
@@ -414,8 +451,11 @@ def main():
     bot_name = "CA_{}".format(sys.argv[1])
     global agent
     agent = None
+    #ai.start(
+    #    loop, ["-name", bot_name, "-join", "localhost"])
+
     ai.start(
-        loop, ["-name", bot_name, "-join", "localhost"])
+        loop, ["-name", bot_name, "-join", "NL210-Lin10138"])
 
 
 if __name__ == "__main__":
