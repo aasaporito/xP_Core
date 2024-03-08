@@ -27,6 +27,7 @@ def get_stats():
 
 @app.get("/is_alive")
 def is_alive():
+    print("New connection")
     stats["connections"] += 1
     return {0}
 
@@ -39,16 +40,20 @@ def get_queues():
 @app.get("/req_{num}")
 def get_chrom(num):
     num = int(num) - 1
+    print("|Q| :  {}, {}, {}, {}".format(len(queue_1), len(queue_2), len(queue_3), len(queue_4)))
 
     if num < 0 or num > 4:
         stats["error_requests"] += 1
-        return {-1}
+        print("Failed to fetch chromosome from Q:{}".format(num + 1))
+        return {"chromosome": -1}
 
     if len(queues[num]) == 0:
+        print("Failed to fetch chromosome from Q:{}".format(num + 1))
         stats["error_requests"] += 1
-        return {-1}
+        return {"chromosome": -1}
 
     chromosome = queues[num].pop(0)
+    print("Chromosome fetched from Q:{}".format(num + 1))
     return {"chromosome": chromosome}
 
 
@@ -66,10 +71,13 @@ async def post_data(chromosome: Chromosome):
     elif chromosome.quadrant == 4:
         queue_4.append(chromosome.chromo)
 
+    print("Chromosome added to Q:{}".format(chromosome.quadrant))
+
     return({"queue_1": queue_1, "queue_2": queue_2, "queue_3": queue_3, 
             "queue_4": queue_4})
 
-
+#SLURM 01: 136.244.224.61
 if __name__ == "__main__":
     import uvicorn
+    #uvicorn.run(app, host="localhost", port=8000)
     uvicorn.run(app, host="136.244.224.61", port=8000)
