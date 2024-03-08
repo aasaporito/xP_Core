@@ -176,7 +176,7 @@ class CoreAgent:
             return
 
         if ai.selfAlive() == 0 and self.crossover_completed is False:
-            new_chromosome_file_name = "~/Documents/xP_Core/data/{}.json".format(self.last_death[0])
+            new_chromosome_file_name = os.path.expanduser("~/Documents/xP_Core/data/{}.json".format(self.last_death[0]))
             new_chromosome = None
             inp = None
 
