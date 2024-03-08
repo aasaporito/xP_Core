@@ -12,7 +12,7 @@ echo "Purged data folder"
 echo "Purged traceback folder"
 
 echo "Launching Queue Server"
-python3 ~/Documents/xP_Core/QueueServer/queue_server.py" &
+python3 "~/Documents/xP_Core/QueueServer/queue_server.py" &
 
 # Start Server
 echo "Starting Xpilots Server";
