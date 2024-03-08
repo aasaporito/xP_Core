@@ -44,12 +44,27 @@ ssh -X slurm03 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
 ssh -X slurm03 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
 ssh -X slurm03 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
 ssh -X slurm03 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
+ssh -X slurm03 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
+ssh -X slurm03 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
+ssh -X slurm03 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
+ssh -X slurm03 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
+ssh -X slurm03 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
+ssh -X slurm03 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
+ssh -X slurm03 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
+ssh -X slurm03 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
 
-tail queue_server.log
+
 # echo "Starting Agent 7-8 on slurm04"
-# ssh -X slurm04 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
-# ssh -X slurm04 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
+ssh -X slurm04 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
+ssh -X slurm04 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
+ssh -X slurm04 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
+ssh -X slurm04 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
+ssh -X slurm04 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
+ssh -X slurm04 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
+ssh -X slurm04 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
+ssh -X slurm04 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
 
+tail -f queue_server.log
 # echo "Starting Agent 9-10 on slurm05"
 # ssh -X slurm05 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
 # ssh -X slurm05 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
