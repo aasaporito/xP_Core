@@ -10,18 +10,18 @@ import json
 
 class CoreAgent:
     def __init__(self, bot_name):
-        #self.QUEUE_ADDR = "http://localhost:8000/"
+        # self.QUEUE_ADDR = "http://localhost:8000/"
         self.QUEUE_ADDR = "http://136.244.224.61:8000/"
         self.MUT_RATE = 300
         self.GENES_PER_LOOP = 8
+        self.chrom_name = ""
+        self.SPAWN_QUAD = None
 
         self.bot_name = bot_name
         self.heading = float(ai.selfHeadingDeg())
         self.tracking = float(ai.selfTrackingDeg())
         self.headingFeelers = []
         self.trackingFeelers = []
-
-        self.SPAWN_QUAD = None
 
         self.X = -1
         self.Y = -1
@@ -117,11 +117,10 @@ class CoreAgent:
 
     def initialize_cga(self, quadrant):
 
-        fetched_chromosome = self.req_chrom(int(quadrant))
-        print(fetched_chromosome)
+        self.bin_chromosome, self.chrom_name = self.req_chrom(int(quadrant))
+        print(self.chrom_name)
 
         self.chromosome_iteration += 1
-        self.bin_chromosome = fetched_chromosome
         self.dec_chromosome = Evolver.read_chrome(self.bin_chromosome)
         print("Chromosome: {}".format(self.bin_chromosome))
 
@@ -165,7 +164,7 @@ class CoreAgent:
     def write_soul_data(self, quadrant):
         output = [str(quadrant), self.bin_chromosome]
         Evolver.write_chromosome_to_file(output, "{}.json"
-                                         .format(self.bot_name))
+                                         .format(self.chrom_name))
 
     def was_killed(self):
         print(self.last_death)
@@ -197,7 +196,6 @@ class CoreAgent:
             self.bin_chromosome = None
             self.SPAWN_QUAD = None
             # print(mutated_child)
-
 
             #self.initialize_cga(quadrant)
             self.crossover_completed = True
@@ -278,15 +276,20 @@ class CoreAgent:
         else:
             print("Error pushing to QS")
 
+    # re.json() automatically converts types in these cases
     def req_chrom(self, quadrant):
         re = requests.get(self.QUEUE_ADDR + "req_{}".format(quadrant))
+        chrom_name = re.json()["chromosome"]
 
-        if re.json()["chromosome"] == -1:
+        if chrom_name == -1:
             print("No available chromosome, generating new chromosome")
-            return Evolver.generate_chromosome()
+            return (Evolver.generate_chromosome(), "")
 
-        print("Succesfully recieved chromosome")
-        return re.json()["chromosome"]
+        print("Succesfully recieved chromosome name")
+        with open(os.path.expanduser('~/Documents/xP_Core/data/{}.json'.format("test")), 'r') as f:
+            chromosome_data = json.loads(f.readlines()[-1])
+
+        return (chromosome_data[1], chrom_name)
 
     def ping_server(self):
         requests.get(self.QUEUE_ADDR + "is_alive")
@@ -437,7 +440,7 @@ def loop():
         print(str(e))
         traceback.print_exc()
         traceback_str = traceback.format_exc()
-        with open("tracebacks/traceback_{}.txt".format(agent.bot_name), "w") as f:
+        with open("tracebacks/traceback_{}.txt".format(agent.chrom_name), "w") as f:
             f.write(traceback_str)
             f.write(str(agent.bin_chromosome))
             f.write(str(agent.dec_chromosome))
