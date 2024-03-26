@@ -1,11 +1,10 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-from typing import List
 
 
-class Chromosome(BaseModel):
+class ChromeID(BaseModel):
     quadrant: int = -1
-    chromo: List[List[str]]
+    file_name: str = ""
 
 
 queue_1 = []
@@ -58,18 +57,18 @@ def get_chrom(num):
 
 
 @app.post("/post")
-async def post_data(chromosome: Chromosome):
+async def post_data(chromosome: ChromeID):
     if chromosome.quadrant < 1 or chromosome.quadrant > 4:
         stats["error_requests"] += 1
 
     if chromosome.quadrant == 1:
-        queue_1.append(chromosome.chromo)
+        queue_1.append(chromosome.file_name)
     elif chromosome.quadrant == 2:
-        queue_2.append(chromosome.chromo)
+        queue_2.append(chromosome.file_name)
     elif chromosome.quadrant == 3:
-        queue_3.append(chromosome.chromo)
+        queue_3.append(chromosome.file_name)
     elif chromosome.quadrant == 4:
-        queue_4.append(chromosome.chromo)
+        queue_4.append(chromosome.file_name)
 
     print("Chromosome added to Q:{}".format(chromosome.quadrant))
 
@@ -79,5 +78,5 @@ async def post_data(chromosome: Chromosome):
 #SLURM 01: 136.244.224.61
 if __name__ == "__main__":
     import uvicorn
-    #uvicorn.run(app, host="localhost", port=8000)
-    uvicorn.run(app, host="136.244.224.61", port=8000)
+    uvicorn.run(app, host="localhost", port=8000)
+    #uvicorn.run(app, host="136.244.224.61", port=8000)
