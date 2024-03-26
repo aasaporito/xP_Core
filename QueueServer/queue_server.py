@@ -7,6 +7,12 @@ class ChromeID(BaseModel):
     file_name: str = ""
 
 
+class ChromMap(BaseModel):
+    chrom_file: str
+    agent_name: str
+
+
+chrom_map = {}
 queue_1 = []
 queue_2 = []
 queue_3 = []
@@ -17,6 +23,13 @@ stats = {"connections": 0, "error_requests": 0}
 
 queues = [queue_1, queue_2, queue_3, queue_4]
 app = FastAPI() 
+
+
+@app.post("/update_map")
+async def update_map(data: ChromMap):
+    print(data)
+    chrom_map.update({data.agent_name: data.chrom_file})
+    print(chrom_map)
 
 
 @app.get("/stats")
