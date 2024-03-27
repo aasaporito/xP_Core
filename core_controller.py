@@ -11,6 +11,7 @@ import uuid
 
 class CoreAgent:
     def __init__(self, bot_name):
+        print("Alive")
         # self.QUEUE_ADDR = "http://localhost:8000/"
         self.QUEUE_ADDR = "http://136.244.224.61:8000/"
         self.MUT_RATE = 300
@@ -409,6 +410,7 @@ def loop():
     global bot_name
     if agent is None:
         agent = CoreAgent(bot_name)
+    
     try:
         if ai.selfAlive() == 1:
             if agent.SPAWN_QUAD is None:
