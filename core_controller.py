@@ -7,6 +7,7 @@ import traceback
 from chromosome import Evolver
 import requests
 import json
+import uuid
 
 class CoreAgent:
     def __init__(self, bot_name):
@@ -37,8 +38,9 @@ class CoreAgent:
         self.current_loop_idx = 0
         self.current_gene_idx = 0
 
+        self.spawn_score = 0
         self.score = 0
-        self.prev_score = 0
+
         self.framesPostDeath = 0
         self.feed_history = ['' * 5]
         self.last_death = ["null", "null"]
@@ -68,7 +70,6 @@ class CoreAgent:
         return self.current_gene_idx
 
     def update_score(self):
-        self.prev_score = self.score
         self.score = ai.selfScore()
 
     def update_agent_data(self):
@@ -118,8 +119,10 @@ class CoreAgent:
     def initialize_cga(self, quadrant):
 
         self.bin_chromosome, self.chrom_name = self.req_chrom(int(quadrant))
-        print(self.chrom_name)
+        if self.chrom_name == "":
+            self.chrom_name = str(uuid.uuid4())[:8]
 
+        print(self.chrom_name)
         self.chromosome_iteration += 1
         self.dec_chromosome = Evolver.read_chrome(self.bin_chromosome)
         print("Chromosome: {}".format(self.bin_chromosome))
@@ -162,9 +165,10 @@ class CoreAgent:
             self.last_death = output
 
     def write_soul_data(self, quadrant):
-        output = [str(quadrant), self.bin_chromosome]
+        output = [str(quadrant), self.bin_chromosome, str(self.score - self.spawn_score)]
         Evolver.write_chromosome_to_file(output, "{}.json"
                                          .format(self.chrom_name))
+        self.update_chrom_map()
 
     def was_killed(self):
         print(self.last_death)
@@ -175,22 +179,28 @@ class CoreAgent:
             return
 
         if ai.selfAlive() == 0 and self.crossover_completed is False:
-            new_chromosome_file_name = os.path.expanduser("~/Documents/xP_Core/data/{}.json".format(self.last_death[0]))
+            killer = self.get_mapping(self.last_death[0])
+
+            new_chromosome_file_name = os.path.expanduser("~/Documents/xP_Core/data/{}.json"
+                                                          .format(killer))
             new_chromosome = None
-            inp = None
 
             print(new_chromosome_file_name)
             with open(new_chromosome_file_name, 'r') as f:
-                inp = json.load(f)
-                print(inp)
-            new_chromosome = inp[1]
-            quadrant = inp[0]
+                chromosome_data = json.loads(f.readlines()[-1])
+      
+            new_chromosome = chromosome_data[1]
+            quadrant = chromosome_data[0]
 
             cross_over_child = Evolver.crossover(self.bin_chromosome, new_chromosome)
             mutated_child = Evolver.mutate(cross_over_child, self.MUT_RATE)
 
+            output = [str(quadrant), mutated_child]
+            Evolver.write_chromosome_to_file(output, "{}.json"
+                                             .format(self.chrom_name))
+
             # POST New chromosome
-            self.push_chrom(quadrant, mutated_child)
+            self.push_chrom(quadrant, self.chrom_name) # TODO switch to
 
             # Prep for fetching new chromosome
             self.bin_chromosome = None
@@ -267,8 +277,8 @@ class CoreAgent:
             direction = 4
         return direction
 
-    def push_chrom(self, quadrant, chromosome):
-        data = {"quadrant": quadrant, "chromo": chromosome}
+    def push_chrom(self, quadrant, chrom_name):
+        data = {"quadrant": quadrant, "file_name": chrom_name}
         re = requests.post(self.QUEUE_ADDR + "post", json=data)
 
         if re.status_code == 200:
@@ -286,7 +296,8 @@ class CoreAgent:
             return (Evolver.generate_chromosome(), "")
 
         print("Succesfully recieved chromosome name")
-        with open(os.path.expanduser('~/Documents/xP_Core/data/{}.json'.format("test")), 'r') as f:
+        with open(os.path.expanduser('~/Documents/xP_Core/data/{}.json'
+                                     .format(chrom_name)), 'r') as f:
             chromosome_data = json.loads(f.readlines()[-1])
 
         return (chromosome_data[1], chrom_name)
@@ -312,6 +323,14 @@ class CoreAgent:
                 agent.SPAWN_QUAD = 4
 
         return agent.SPAWN_QUAD
+
+    def update_chrom_map(self):
+        requests.post(self.QUEUE_ADDR + "update_map", json={"agent_name": self.bot_name, "chrom_file": self.chrom_name})
+
+    # This should always return a file name (without extension)
+    def get_mapping(self, bot_name):
+        r = requests.get(self.QUEUE_ADDR + "get_map_{}".format(bot_name))
+        return r.json()[0]
 
 
 class ActionGene:
@@ -394,8 +413,10 @@ def loop():
         if ai.selfAlive() == 1:
             if agent.SPAWN_QUAD is None:
                 print("Spawn Quadrant: {} ".format(agent.set_spawn_quad()))
-            else:
-                agent.write_soul_data(agent.SPAWN_QUAD)
+                agent.spawn_score = ai.selfScore()
+            #else:
+            #    print("soul data else")
+            #    agent.write_soul_data(agent.SPAWN_QUAD)
 
             if agent.SPAWN_QUAD is not None and agent.bin_chromosome is None:
                 agent.initialize_cga(agent.SPAWN_QUAD)
@@ -454,8 +475,7 @@ def main():
     bot_name = "CA_{}".format(sys.argv[1])
     global agent
     agent = None
-    #ai.start(
-    #    loop, ["-name", bot_name, "-join", "localhost"])
+    # ai.start(loop, ["-name", bot_name, "-join", "localhost"])
 
     ai.start(
         loop, ["-name", bot_name, "-join", "NL210-Lin10138"])

@@ -32,6 +32,11 @@ async def update_map(data: ChromMap):
     print(chrom_map)
 
 
+@app.get("/get_map_{name}")
+def get_map(name):
+    return {chrom_map[name]}
+
+    
 @app.get("/stats")
 def get_stats():
     return stats
