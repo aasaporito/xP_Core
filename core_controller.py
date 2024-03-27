@@ -196,7 +196,7 @@ class CoreAgent:
             cross_over_child = Evolver.crossover(self.bin_chromosome, new_chromosome)
             mutated_child = Evolver.mutate(cross_over_child, self.MUT_RATE)
 
-            output = [str(quadrant), mutated_child]
+            output = [str(quadrant), self.bin_chromosome, str(self.score - self.spawn_score)]
             Evolver.write_chromosome_to_file(output, "{}.json"
                                              .format(self.chrom_name))
 
