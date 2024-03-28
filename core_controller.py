@@ -8,10 +8,11 @@ from chromosome import Evolver
 import requests
 import json
 import uuid
+import time
 
 class CoreAgent:
     def __init__(self, bot_name):
-        print("Alive")
+        # print("Alive")
         # self.QUEUE_ADDR = "http://localhost:8000/"
         self.QUEUE_ADDR = "http://136.244.224.61:8000/"
         self.MUT_RATE = 300
@@ -41,6 +42,8 @@ class CoreAgent:
 
         self.spawn_score = 0
         self.score = 0
+        self.SD = False
+        self.movement_timer = -1.0
 
         self.framesPostDeath = 0
         self.feed_history = ['' * 5]
@@ -136,7 +139,7 @@ class CoreAgent:
         self.current_gene_idx = 0
         
         self.write_soul_data(quadrant)
-        #Evolver.log_chromosome_history(self.bin_chromosome, self.chromosome_iteration,
+        # Evolver.log_chromosome_history(self.bin_chromosome, self.chromosome_iteration,
         #                              "{}_history.txt".format(self.bot_name))
 
     def process_server_feed(self):
@@ -146,7 +149,9 @@ class CoreAgent:
             if self.bot_name in serverMessage \
                     and "ratio" not in serverMessage \
                     and "crashed" not in serverMessage \
-                    and "entered" not in serverMessage:
+                    and "entered" not in serverMessage \
+                    and "suicide" not in serverMessage:
+
                 self.feed_history.append(serverMessage)
 
         killer = "null"
@@ -416,12 +421,26 @@ def loop():
             if agent.SPAWN_QUAD is None:
                 print("Spawn Quadrant: {} ".format(agent.set_spawn_quad()))
                 agent.spawn_score = ai.selfScore()
+                agent.SD = False
             #else:
             #    print("soul data else")
             #    agent.write_soul_data(agent.SPAWN_QUAD)
 
             if agent.SPAWN_QUAD is not None and agent.bin_chromosome is None:
                 agent.initialize_cga(agent.SPAWN_QUAD)
+
+            if agent.X != ai.selfX() or agent.Y != ai.selfY():
+                agent.movement_timer = time.time()
+
+            if agent.movement_timer == -1.0:
+                agent.movement_timer = time.time()
+                agent.SD = False
+                print("Initial SD timer set")
+
+            if time.time() - agent.movement_timer > 5.0 and not agent.SD:
+                ai.selfDestruct()
+                agent.SD = True
+                print("SD'ing")
 
             if agent.bin_chromosome is not None:
                 agent.frames_dead = 0
