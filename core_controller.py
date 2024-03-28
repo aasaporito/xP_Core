@@ -30,7 +30,6 @@ class CoreAgent:
         self.Y = -1
         self.heading = 90.0
         self.speed = -1
-        ai.setTurnSpeed(20.0)
         ai.setPower(8)
 
         self.bin_chromosome = None
@@ -207,7 +206,8 @@ class CoreAgent:
 
             # POST New chromosome
             self.push_chrom(quadrant, self.chrom_name) # TODO switch to
-
+            self.push_chrom(quadrant, self.chrom_name)
+            
             # Prep for fetching new chromosome
             self.bin_chromosome = None
             self.SPAWN_QUAD = None
@@ -348,7 +348,7 @@ class ActionGene:
         self.agent = agent
         self.shoot = gene[1]
         self.thrust = 1 if gene[2] else 0
-        self.turn_quantity = int((gene[3] + 3) * 2)
+        self.turn_quantity = int((gene[3] + 0) * 5) # Prev + 3 * 2
         self.turn_target = gene[4]
 
         self.act()
@@ -422,6 +422,8 @@ def loop():
                 print("Spawn Quadrant: {} ".format(agent.set_spawn_quad()))
                 agent.spawn_score = ai.selfScore()
                 agent.SD = False
+                ai.setTurnSpeed(64.0)
+                
             #else:
             #    print("soul data else")
             #    agent.write_soul_data(agent.SPAWN_QUAD)
