@@ -162,9 +162,9 @@ class Evolver():
         return chromosome
 
     @classmethod
-    def write_chromosome_to_file(cls, chromosome, filename):
+    def write_chromosome_to_file(cls, chromosome, filename, ftype):
         dataPath = os.path.expanduser("~/Documents/xP_Core/data/" + filename)
-        with open(dataPath, "a") as file:
+        with open(dataPath, ftype) as file:
             file.write("\n")
             json.dump(chromosome, file)
 

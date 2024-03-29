@@ -121,14 +121,33 @@ class CoreAgent:
 
     def initialize_cga(self, quadrant):
 
-        self.bin_chromosome, self.chrom_name = self.req_chrom(int(quadrant))
-        if self.chrom_name == "":
-            self.chrom_name = str(uuid.uuid4())[:8]
+        self.bin_chromosome, new_name = self.req_chrom(int(quadrant))
+        print("New Name: " + new_name)
+        print(new_name == "")
+        ftype = "a"
+        if new_name == "":
+            try:
+                # Rewrite if it is a single generation failed chromosome
+                with open(os.path.expanduser('~/Documents/xP_Core/data/{}.json'
+                                             .format(self.chrom_name)), 'r') as f:
+                    file_length = len(f.readlines())
+                    print(file_length)
+                    print("Name: " + self.chrom_name)
 
-        print(self.chrom_name)
+                if file_length == 2:
+                    ftype = "w"
+                else:  # For initial chromosome file name generation
+                    self.chrom_name = str(uuid.uuid4())[:8]
+
+            except:  # noqa: E722
+                self.chrom_name = str(uuid.uuid4())[:8]
+            
+        else:
+            self.chrom_name = new_name
+
         self.chromosome_iteration += 1
         self.dec_chromosome = Evolver.read_chrome(self.bin_chromosome)
-        print("Chromosome: {}".format(self.bin_chromosome))
+        # print("Chromosome: {}".format(self.bin_chromosome))
 
         self.last_kill = ["null", "null"]
         self.last_death = ["null", "null"]
@@ -137,7 +156,7 @@ class CoreAgent:
         self.current_loop = self.dec_chromosome[0]
         self.current_gene_idx = 0
         
-        self.write_soul_data(quadrant)
+        self.write_soul_data(quadrant, ftype=ftype)
         # Evolver.log_chromosome_history(self.bin_chromosome, self.chromosome_iteration,
         #                              "{}_history.txt".format(self.bot_name))
 
@@ -169,10 +188,10 @@ class CoreAgent:
         elif victim == self.bot_name:
             self.last_death = output
 
-    def write_soul_data(self, quadrant):
+    def write_soul_data(self, quadrant, ftype="a"):
         output = [str(quadrant), self.bin_chromosome, str(self.score - self.spawn_score)]
         Evolver.write_chromosome_to_file(output, "{}.json"
-                                         .format(self.chrom_name))
+                                         .format(self.chrom_name), ftype)
         self.update_chrom_map()
 
     def was_killed(self):
@@ -202,7 +221,7 @@ class CoreAgent:
 
             output = [str(quadrant), self.bin_chromosome, str(self.score - self.spawn_score)]
             Evolver.write_chromosome_to_file(output, "{}.json"
-                                             .format(self.chrom_name))
+                                             .format(self.chrom_name), "a")
 
             # POST New chromosome
             self.push_chrom(quadrant, self.chrom_name) # TODO switch to
@@ -453,7 +472,7 @@ def loop():
                 agent.crossover_completed = False
                 gene = agent.current_loop[agent.current_gene_idx]
 
-                print("Gene: {}".format(gene))
+                # print("Gene: {}".format(gene))
                 if Evolver.is_jump_gene(gene):
                     if agent.check_conditional(gene[1]):
                         agent.current_loop_idx = gene[2]
