@@ -156,7 +156,6 @@ class CoreAgent:
         self.current_loop = self.dec_chromosome[0]
         self.current_gene_idx = 0
         
-        self.write_soul_data(quadrant, ftype=ftype)
         # Evolver.log_chromosome_history(self.bin_chromosome, self.chromosome_iteration,
         #                              "{}_history.txt".format(self.bot_name))
 
@@ -219,7 +218,7 @@ class CoreAgent:
             cross_over_child = Evolver.crossover(self.bin_chromosome, new_chromosome)
             mutated_child = Evolver.mutate(cross_over_child, self.MUT_RATE)
 
-            output = [str(quadrant), self.bin_chromosome, str(self.score - self.spawn_score)]
+            output = [str(quadrant), mutated_child, str(self.score - self.spawn_score)]
             Evolver.write_chromosome_to_file(output, "{}.json"
                                              .format(self.chrom_name), "a")
 
