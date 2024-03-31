@@ -156,6 +156,7 @@ class CoreAgent:
         self.current_loop = self.dec_chromosome[0]
         self.current_gene_idx = 0
         
+        self.write_soul_data(self.SPAWN_QUAD, ftype)
         # Evolver.log_chromosome_history(self.bin_chromosome, self.chromosome_iteration,
         #                              "{}_history.txt".format(self.bot_name))
 
