@@ -442,7 +442,8 @@ def loop():
                 agent.SD = False
                 ai.setTurnSpeed(64.0)
                 
-            #else:
+            else:
+                agent.update_chrom_map()
             #    print("soul data else")
             #    agent.write_soul_data(agent.SPAWN_QUAD)
 
