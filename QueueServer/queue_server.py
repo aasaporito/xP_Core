@@ -93,6 +93,10 @@ async def post_data(chromosome: ChromeID):
     return({"queue_1": queue_1, "queue_2": queue_2, "queue_3": queue_3, 
             "queue_4": queue_4})
 
+@app.get("/info")
+def get_info():
+    infos = {"chrom_map": chrom_map, "stats": stats, "queues": queues}
+
 #SLURM 01: 136.244.224.61
 if __name__ == "__main__":
     import uvicorn
