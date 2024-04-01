@@ -147,9 +147,11 @@ class CoreAgent:
                 print(e)
                 self.chrom_name = str(uuid.uuid4())[:8]
                 print("Exception: " + self.chrom_name)
-            
+        
+        # This should only occur if a multi generation chromosome dies of own accord
         else:
-            self.chrom_name = new_name
+            self.chrom_name = self.chrom_name
+            print("Multi-gen death, keeping chromosome")
 
         self.chromosome_iteration += 1
         self.dec_chromosome = Evolver.read_chrome(self.bin_chromosome)
