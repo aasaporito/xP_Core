@@ -27,9 +27,9 @@ app = FastAPI()
 
 @app.post("/update_map")
 async def update_map(data: ChromMap):
-    print(data)
+    #print(data)
     chrom_map.update({data.agent_name: data.chrom_file})
-    print(chrom_map)
+    #print(chrom_map)
 
 
 @app.get("/get_map_{name}")
