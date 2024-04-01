@@ -126,7 +126,11 @@ class CoreAgent:
         print(new_name == "")
         ftype = "a"
 
-        if new_name == "":
+        if new_name == "" and self.chrom_name == "":
+            self.chrom_name = str(uuid.uuid4())[:8]
+            print("Generating new chromosome name (initial chromosomes only): " 
+                  + self.chrom_name)
+        elif new_name == "":
             try:
                 # Rewrite if it is a single generation failed chromosome
                 with open(os.path.expanduser('~/Documents/xP_Core/data/{}.json'
@@ -138,10 +142,7 @@ class CoreAgent:
                 if file_length == 2:
                     ftype = "w"
                     print("Rewriting file for: " + self.chrom_name)
-                else:  # For initial chromosome file name generation
-                    self.chrom_name = str(uuid.uuid4())[:8]
-                    print("Generating new chromosome name (initial chromosomes only): " + self.chrom_name)
-
+                    
             except Exception as e:  # noqa: E722
                 print(e)
                 self.chrom_name = str(uuid.uuid4())[:8]
