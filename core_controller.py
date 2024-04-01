@@ -125,7 +125,7 @@ class CoreAgent:
         print("New Name: " + new_name)
         print(new_name == "")
         ftype = "a"
-        
+
         if new_name == "":
             try:
                 # Rewrite if it is a single generation failed chromosome
@@ -142,7 +142,8 @@ class CoreAgent:
                     self.chrom_name = str(uuid.uuid4())[:8]
                     print("Generating new chromosome name (initial chromosomes only): " + self.chrom_name)
 
-            except:  # noqa: E722
+            except Exception as e:  # noqa: E722
+                print(e)
                 self.chrom_name = str(uuid.uuid4())[:8]
                 print("Exception: " + self.chrom_name)
             
