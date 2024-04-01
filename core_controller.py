@@ -125,6 +125,7 @@ class CoreAgent:
         print("New Name: " + new_name)
         print(new_name == "")
         ftype = "a"
+        
         if new_name == "":
             try:
                 # Rewrite if it is a single generation failed chromosome
@@ -136,11 +137,14 @@ class CoreAgent:
 
                 if file_length == 2:
                     ftype = "w"
+                    print("Rewriting file for: " + self.chrom_name)
                 else:  # For initial chromosome file name generation
                     self.chrom_name = str(uuid.uuid4())[:8]
+                    print("Generating new chromosome name (initial chromosomes only): " + self.chrom_name)
 
             except:  # noqa: E722
                 self.chrom_name = str(uuid.uuid4())[:8]
+                print("Exception: " + self.chrom_name)
             
         else:
             self.chrom_name = new_name
@@ -224,7 +228,7 @@ class CoreAgent:
                                              .format(self.chrom_name), "a")
 
             # POST New chromosome
-            self.push_chrom(quadrant, self.chrom_name) # TODO switch to
+            self.push_chrom(quadrant, self.chrom_name)  # TODO switch to
             self.push_chrom(quadrant, self.chrom_name)
             
             # Prep for fetching new chromosome
