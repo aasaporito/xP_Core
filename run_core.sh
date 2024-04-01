@@ -171,7 +171,7 @@ ssh -X slurm10 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" > /dev/n
 ssh -X slurm10 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" > /dev/null 2>&1 &
 ssh -X slurm10 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" > /dev/null 2>&1 &
 
-# tail -f queue_server.log
+tail -f queue_server.log
 # echo "Starting Agent 9-10 on slurm08"
 # ssh -X slurm08 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
 # ssh -X slurm08 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
