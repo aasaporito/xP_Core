@@ -10,6 +10,7 @@ import json
 import uuid
 import time
 
+
 class CoreAgent:
     def __init__(self, bot_name):
         # print("Alive")
@@ -203,6 +204,7 @@ class CoreAgent:
         self.update_chrom_map()
 
     def was_killed(self):
+        agent.update_score()
         print(self.last_death)
 
         if "null" in self.last_death:
