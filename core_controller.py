@@ -213,9 +213,6 @@ class CoreAgent:
                 output = [str(self.SPAWN_QUAD), self.bin_chromosome, str(self.score - self.spawn_score)]
                 Evolver.write_chromosome_to_file(output, "{}.json"
                                                  .format(self.chrom_name), "a")
-
-            if self.SPAWN_QUAD is None:
-                self.SPAWN_QUAD = -1
                 
             self.push_chrom(int(self.SPAWN_QUAD), self.chrom_name)
 
@@ -465,8 +462,7 @@ def loop():
                 agent.SD = False
                 ai.setTurnSpeed(64.0)
                 agent.update_chrom_map()
-
-                
+             
             # else:
             #    print("soul data else")
             #    agent.write_soul_data(agent.SPAWN_QUAD)
@@ -515,7 +511,7 @@ def loop():
         else:
             agent.process_server_feed()
             agent.frames_dead += 1
-            agent.SPAWN_QUAD = None
+            #agent.SPAWN_QUAD = None
             agent.X = -1
             agent.Y = -1
             if agent.frames_dead >= 5:
