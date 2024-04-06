@@ -205,6 +205,50 @@ ssh -X slurm11 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" > /dev/n
 ssh -X slurm11 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" > /dev/null 2>&1 &
 ssh -X slurm11 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" > /dev/null 2>&1 &
 
+ssh -X slurm12 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" > /dev/null 2>&1 &
+ssh -X slurm12 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" > /dev/null 2>&1 &
+ssh -X slurm12 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" > /dev/null 2>&1 &
+ssh -X slurm12 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" > /dev/null 2>&1 &
+ssh -X slurm12 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" > /dev/null 2>&1 &
+ssh -X slurm12 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" > /dev/null 2>&1 &
+ssh -X slurm12 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" > /dev/null 2>&1 &
+ssh -X slurm12 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" > /dev/null 2>&1 &
+ssh -X slurm12 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" > /dev/null 2>&1 &
+ssh -X slurm12 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" > /dev/null 2>&1 &
+
+ssh -X slurm13 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" > /dev/null 2>&1 &
+ssh -X slurm13 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" > /dev/null 2>&1 &
+ssh -X slurm13 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" > /dev/null 2>&1 &
+ssh -X slurm13 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" > /dev/null 2>&1 &
+ssh -X slurm13 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" > /dev/null 2>&1 &
+ssh -X slurm13 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" > /dev/null 2>&1 &
+ssh -X slurm13 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" > /dev/null 2>&1 &
+ssh -X slurm13 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" > /dev/null 2>&1 &
+ssh -X slurm13 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" > /dev/null 2>&1 &
+ssh -X slurm13 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" > /dev/null 2>&1 &
+ssh -X slurm13 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" > /dev/null 2>&1 &
+
+ssh -X slurm14 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" > /dev/null 2>&1 &
+ssh -X slurm14 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" > /dev/null 2>&1 &
+ssh -X slurm14 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" > /dev/null 2>&1 &
+ssh -X slurm14 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" > /dev/null 2>&1 &
+ssh -X slurm14 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" > /dev/null 2>&1 &
+ssh -X slurm14 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" > /dev/null 2>&1 &
+ssh -X slurm14 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" > /dev/null 2>&1 &
+ssh -X slurm14 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" > /dev/null 2>&1 &
+ssh -X slurm14 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" > /dev/null 2>&1 &
+ssh -X slurm14 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" > /dev/null 2>&1 &
+
+ssh -X slurm15 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" > /dev/null 2>&1 &
+ssh -X slurm15 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" > /dev/null 2>&1 &
+ssh -X slurm15 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" > /dev/null 2>&1 &
+ssh -X slurm15 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" > /dev/null 2>&1 &
+ssh -X slurm15 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" > /dev/null 2>&1 &
+ssh -X slurm15 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" > /dev/null 2>&1 &
+ssh -X slurm15 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" > /dev/null 2>&1 &
+ssh -X slurm15 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" > /dev/null 2>&1 &
+ssh -X slurm15 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" > /dev/null 2>&1 &
+
 
 tail -f queue_server.log
 # echo "Starting Agent 9-10 on slurm08"
