@@ -137,7 +137,6 @@ class CoreAgent:
                 with open(os.path.expanduser('~/Documents/xP_Core/data/{}.json'
                                              .format(self.chrom_name)), 'r') as f:
                     file_length = len(f.readlines())
-                    print(file_length)
                     print("Name: " + self.chrom_name)
 
                 if file_length == 2:
@@ -150,9 +149,9 @@ class CoreAgent:
                 print("Exception: " + self.chrom_name)
         
         # This should only occur if a multi generation chromosome dies of own accord
-        else:
-            self.chrom_name = self.chrom_name
-            print("Multi-gen death, keeping chromosome")
+        # else:
+        #    self.chrom_name = self.chrom_name
+        #    print("Multi-gen death, keeping chromosome")
 
         self.chromosome_iteration += 1
         self.dec_chromosome = Evolver.read_chrome(self.bin_chromosome)
@@ -214,7 +213,7 @@ class CoreAgent:
                 output = [str(self.SPAWN_QUAD), self.bin_chromosome, str(self.score - self.spawn_score)]
                 Evolver.write_chromosome_to_file(output, "{}.json"
                                                  .format(self.chrom_name), "a")
-                
+
             self.push_chrom(self.SPAWN_QUAD, self.chrom_name)
 
             self.bin_chromosome = None
