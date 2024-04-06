@@ -214,6 +214,9 @@ class CoreAgent:
                 output = [str(self.SPAWN_QUAD), self.bin_chromosome, str(self.score - self.spawn_score)]
                 Evolver.write_chromosome_to_file(output, "{}.json"
                                                  .format(self.chrom_name), "a")
+                
+            self.push_chrom(self.SPAWN_QUAD, self.chrom_name)
+
             self.bin_chromosome = None
             self.SPAWN_QUAD = None
 
