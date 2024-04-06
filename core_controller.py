@@ -214,7 +214,10 @@ class CoreAgent:
                 Evolver.write_chromosome_to_file(output, "{}.json"
                                                  .format(self.chrom_name), "a")
 
-            self.push_chrom(self.SPAWN_QUAD, self.chrom_name)
+            if self.SPAWN_QUAD is None:
+                self.SPAWN_QUAD = -1
+                
+            self.push_chrom(int(self.SPAWN_QUAD), self.chrom_name)
 
             self.bin_chromosome = None
             self.SPAWN_QUAD = None
