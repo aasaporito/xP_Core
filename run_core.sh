@@ -11,13 +11,13 @@ echo "Purged data folder"
 echo "Purged traceback folder"
 
 echo "Launching Queue Server"
-python3 ~/Documents/xP_Core/QueueServer/queue_server.py > queue_server.log &
+python3 ~/Documents/xP_Core/QueueServer/queue_server.py & # > queue_server.log &
 sleep 5;
 
 # Start Server
 echo "Starting Xpilots Server";
 # switchBase 1 = 100% probability to swap bases on death, + teams disables teams
-~/Documents/xP_Core/xpilots -map ~/Documents/xP_Core/core.xp -noquit -switchBase 1.0 +teamPlay -maxRoundTime 60 -roundsToPlay 0 +limitedLives -maxClientsPerIP 32  > /dev/null 2>&1 &
+~/Documents/xP_Core/xpilots -map ~/Documents/xP_Core/core.xp -noquit -switchBase 1.0 +teamPlay -maxRoundTime 60 -roundsToPlay 0 +limitedLives -maxClientsPerIP 100  > /dev/null 2>&1 &
 
 
 # Slurms: 1,3,4,7,8,10,11,12,14,17
@@ -250,7 +250,7 @@ ssh -X slurm15 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" > /dev/n
 ssh -X slurm15 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" > /dev/null 2>&1 &
 
 
-tail -f queue_server.log
+# tail -f queue_server.log
 # echo "Starting Agent 9-10 on slurm08"
 # ssh -X slurm08 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &
 # ssh -X slurm08 "python3 ~/Documents/xP_Core/core_controller.py $RANDOM" &

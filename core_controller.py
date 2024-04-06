@@ -538,7 +538,7 @@ def main():
     global agent
     agent = None
     # ai.start(loop, ["-name", bot_name, "-join", "localhost"])
-
+    ai.headlessMode()
     ai.start(
         loop, ["-name", bot_name, "-join", "NL210-Lin10138"])
 
