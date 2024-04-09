@@ -209,10 +209,11 @@ class CoreAgent:
         if "null" in self.last_death:
             # TODO : This will cause useless chromosomes to not be rewritten. Revisit
             # this condition. -5 to account for SD point loss
-            if self.score - 5 >= self.spawn_score:
-                output = [str(self.SPAWN_QUAD), self.bin_chromosome, str(self.score - self.spawn_score)]
-                Evolver.write_chromosome_to_file(output, "{}.json"
-                                                 .format(self.chrom_name), "a")
+            # TODO: Is this why no negatives from wall crashes?
+            #if self.score - 5 >= self.spawn_score:
+            #    output = [str(self.SPAWN_QUAD), self.bin_chromosome, str(self.score - self.spawn_score)]
+            #    Evolver.write_chromosome_to_file(output, "{}.json"
+            #                                     .format(self.chrom_name), "a")
                 
             self.push_chrom(int(self.SPAWN_QUAD), self.chrom_name)
 
