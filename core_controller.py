@@ -121,7 +121,6 @@ class CoreAgent:
         self.tracking = float(ai.selfTrackingDeg())
 
     def initialize_cga(self, quadrant):
-
         self.bin_chromosome, new_name = self.req_chrom(int(quadrant))
         print("New Name: " + new_name)
         print(new_name == "")
@@ -143,19 +142,22 @@ class CoreAgent:
                     ftype = "w"
                     print("Rewriting file for: " + self.chrom_name)
                     
+                    
             except Exception as e:  # noqa: E722
                 print(e)
                 self.chrom_name = str(uuid.uuid4())[:8]
                 print("Exception: " + self.chrom_name)
         
-        # This should only occur if a multi generation chromosome dies of own accord
-        # else:
-        #    self.chrom_name = self.chrom_name
-        #    print("Multi-gen death, keeping chromosome")
+        if new_name != "":
+        	self.chrom_name = new_name
+        	ftype = "a"
+        	self.update_chrom_map()
+        
+        self.write_soul_data(self.SPAWN_QUAD, ftype, None)
+
 
         self.chromosome_iteration += 1
         self.dec_chromosome = Evolver.read_chrome(self.bin_chromosome)
-        # print("Chromosome: {}".format(self.bin_chromosome))
 
         self.last_kill = ["null", "null"]
         self.last_death = ["null", "null"]
@@ -164,9 +166,7 @@ class CoreAgent:
         self.current_loop = self.dec_chromosome[0]
         self.current_gene_idx = 0
         
-        self.write_soul_data(self.SPAWN_QUAD, ftype)
-        # Evolver.log_chromosome_history(self.bin_chromosome, self.chromosome_iteration,
-        #                              "{}_history.txt".format(self.bot_name))
+        
 
     def process_server_feed(self):
         self.feed_history = []
@@ -196,8 +196,12 @@ class CoreAgent:
         elif victim == self.bot_name:
             self.last_death = output
 
-    def write_soul_data(self, quadrant, ftype="a"):
-        output = [str(quadrant), self.bin_chromosome, str(self.score - self.spawn_score)]
+    def write_soul_data(self, quadrant, ftype="a", score=-9999):
+        if score is -9999:
+            write_score = None
+        else:
+            write_score = str(self.score - self.spawn_score)
+        output = [str(quadrant), self.bin_chromosome, write_score]
         Evolver.write_chromosome_to_file(output, "{}.json"
                                          .format(self.chrom_name), ftype)
         self.update_chrom_map()
@@ -240,9 +244,9 @@ class CoreAgent:
             mutated_child = Evolver.mutate(cross_over_child, self.MUT_RATE)
 
             output = [str(quadrant), mutated_child, str(self.score - self.spawn_score)]
-            Evolver.write_chromosome_to_file(output, "{}.json"
-                                             .format(self.chrom_name), "a")
-
+           # Evolver.write_chromosome_to_file(output, "{}.json"
+            #                                 .format(self.chrom_name), "a")
+            self.write_soul_data(self.SPAWN_QUAD, "a")
             # POST New chromosome
             self.push_chrom(quadrant, self.chrom_name)  # TODO switch to
             self.push_chrom(quadrant, self.chrom_name)
@@ -524,7 +528,8 @@ def loop():
         print(str(e))
         traceback.print_exc()
         traceback_str = traceback.format_exc()
-        with open("tracebacks/traceback_{}.txt".format(agent.chrom_name), "w") as f:
+        fs = os.path.expanduser(f"~/Documents/xP_Core/tracebacks/{agent.chrom_name}.txt")
+        with open(fs, "w") as f:
             f.write(traceback_str)
             f.write(str(agent.bin_chromosome))
             f.write(str(agent.dec_chromosome))
