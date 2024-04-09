@@ -119,4 +119,4 @@ def get_info():
 if __name__ == "__main__":
     import uvicorn
     # uvicorn.run(app, host="localhost", port=8000)
-    uvicorn.run(app, host="136.244.224.61", port=8000)
+    uvicorn.run(app, host="136.244.224.61", port=8000, log_level="critical")
