@@ -64,13 +64,13 @@ class CoreAgent:
         self.angle_to_shot = -1
 
         self.generate_feelers(10)
-        self.frames_dead = 0       
+        self.frames_dead = 0
 
-        self.ping_server() 
+        self.ping_server()
 
     def increment_gene_idx(self):
         self.current_gene_idx = (self.current_gene_idx + 1) \
-                                % self.GENES_PER_LOOP
+            % self.GENES_PER_LOOP
         return self.current_gene_idx
 
     def update_score(self):
@@ -114,9 +114,11 @@ class CoreAgent:
 
     def generate_feelers(self, step):
         for angle in range(0, 360, step):
-            self.trackingFeelers.append(ai.wallFeeler(500, int(self.tracking + angle)))
+            self.trackingFeelers.append(
+                ai.wallFeeler(500, int(self.tracking + angle)))
         for angle in range(0, 360, step):
-            self.headingFeelers.append(ai.wallFeeler(500, int(self.heading + angle)))
+            self.headingFeelers.append(
+                ai.wallFeeler(500, int(self.heading + angle)))
         self.heading = float(ai.selfHeadingDeg())
         self.tracking = float(ai.selfTrackingDeg())
 
@@ -128,7 +130,7 @@ class CoreAgent:
 
         if new_name == "" and self.chrom_name == "":
             self.chrom_name = str(uuid.uuid4())[:8]
-            print("Generating new chromosome name (initial chromosomes only): " 
+            print("Generating new chromosome name (initial chromosomes only): "
                   + self.chrom_name)
         elif new_name == "":
             try:
@@ -141,21 +143,18 @@ class CoreAgent:
                 if file_length == 2:
                     ftype = "w"
                     print("Rewriting file for: " + self.chrom_name)
-                    
-                    
+
             except Exception as e:  # noqa: E722
                 print(e)
                 self.chrom_name = str(uuid.uuid4())[:8]
                 print("Exception: " + self.chrom_name)
-        
-        if new_name != "":
-        	self.chrom_name = new_name
-        	ftype = "a"
-        	self.update_chrom_map()
-        
-        
-        self.write_soul_data(self.SPAWN_QUAD, ftype, None)
 
+        if new_name != "":
+            self.chrom_name = new_name
+            ftype = "a"
+            self.update_chrom_map()
+
+        self.write_soul_data(self.SPAWN_QUAD, ftype, None)
 
         self.chromosome_iteration += 1
         self.dec_chromosome = Evolver.read_chrome(self.bin_chromosome)
@@ -166,8 +165,6 @@ class CoreAgent:
         self.current_loop_idx = 0
         self.current_loop = self.dec_chromosome[0]
         self.current_gene_idx = 0
-        
-        
 
     def process_server_feed(self):
         self.feed_history = []
@@ -197,10 +194,15 @@ class CoreAgent:
         elif victim == self.bot_name:
             self.last_death = output
 
-    def write_soul_data(self, quadrant, ftype="a", score=-9999):
-        print(f"internal score: {score}")
+    def write_soul_data(self, quadrant, ftype="a", score=0.0):
+        if score is -9999:
+            write_score = str(0)
+        else:
+            write_score = str(self.score - self.spawn_score)
 
-        output = [str(quadrant), self.bin_chromosome, score]
+        output = [str(quadrant), self.bin_chromosome, write_score]
+        print(write_score)
+
         Evolver.write_chromosome_to_file(output, "{}.json"
                                          .format(self.chrom_name), ftype)
         self.update_chrom_map()
@@ -208,11 +210,11 @@ class CoreAgent:
 
     def was_killed(self):
         agent.update_score()
-        
+
         print(self.last_death)
         print(f"Current Score: {self.score}")
         print(f"Spawn Score: {self.spawn_score}")
-        
+
         life_score = str(self.score - self.spawn_score)
         print(f"Score to log: {life_score}")
         if "null" in self.last_death:
@@ -220,13 +222,13 @@ class CoreAgent:
             # TODO : This will cause useless chromosomes to not be rewritten. Revisit
             # this condition. -5 to account for SD point loss
             # TODO: Is this why no negatives from wall crashes?
-            #if self.score - 5 >= self.spawn_score:
+            # if self.score - 5 >= self.spawn_score:
             #    output = [str(self.SPAWN_QUAD), self.bin_chromosome, str(self.score - self.spawn_score)]
             #    Evolver.write_chromosome_to_file(output, "{}.json"
             #                                     .format(self.chrom_name), "a")
-                
+
             self.push_chrom(int(self.SPAWN_QUAD), self.chrom_name)
-            self.write_soul_data(self.SPAWN_QUAD, "a", score = life_score)
+            self.write_soul_data(self.SPAWN_QUAD, "a", score=life_score)
             self.bin_chromosome = None
             self.SPAWN_QUAD = None
 
@@ -243,29 +245,30 @@ class CoreAgent:
             print(new_chromosome_file_name)
             with open(new_chromosome_file_name, 'r') as f:
                 chromosome_data = json.loads(f.readlines()[-1])
-      
+
             new_chromosome = chromosome_data[1]
             quadrant = chromosome_data[0]
 
-            cross_over_child = Evolver.crossover(self.bin_chromosome, new_chromosome)
+            cross_over_child = Evolver.crossover(
+                self.bin_chromosome, new_chromosome)
             mutated_child = Evolver.mutate(cross_over_child, self.MUT_RATE)
 
             output = [str(quadrant), mutated_child, life_score]
             print(killer)
             print("Killed ^")
-           # Evolver.write_chromosome_to_file(output, "{}.json"
+            # Evolver.write_chromosome_to_file(output, "{}.json"
             #                                 .format(self.chrom_name), "a")
-            self.write_soul_data(self.SPAWN_QUAD, "a", score = life_score)
+            self.write_soul_data(self.SPAWN_QUAD, "a", score=life_score)
             # POST New chromosome
             self.push_chrom(quadrant, self.chrom_name)  # TODO switch to
             self.push_chrom(quadrant, self.chrom_name)
-            
+
             # Prep for fetching new chromosome
             self.bin_chromosome = None
             self.SPAWN_QUAD = None
             # print(mutated_child)
 
-            #self.initialize_cga(quadrant)
+            # self.initialize_cga(quadrant)
             self.crossover_completed = True
             self.self_destructed = False
 
@@ -378,13 +381,14 @@ class CoreAgent:
                 agent.SPAWN_QUAD = 2
             elif SPAWN_X < 0 and SPAWN_Y < 0:
                 agent.SPAWN_QUAD = 3
-            else: 
+            else:
                 agent.SPAWN_QUAD = 4
 
         return agent.SPAWN_QUAD
 
     def update_chrom_map(self):
-        requests.post(self.QUEUE_ADDR + "update_map", json={"agent_name": self.bot_name, "chrom_file": self.chrom_name})
+        requests.post(self.QUEUE_ADDR + "update_map",
+                      json={"agent_name": self.bot_name, "chrom_file": self.chrom_name})
 
     # This should always return a file name (without extension)
     def get_mapping(self, bot_name):
@@ -401,7 +405,7 @@ class ActionGene:
         self.agent = agent
         self.shoot = gene[1]
         self.thrust = 1 if gene[2] else 0
-        self.turn_quantity = int((gene[3] + 0) * 5) # Prev + 3 * 2
+        self.turn_quantity = int((gene[3] + 0) * 5)  # Prev + 3 * 2
         self.turn_target = gene[4]
 
         self.act()
@@ -468,7 +472,7 @@ def loop():
     global bot_name
     if agent is None:
         agent = CoreAgent(bot_name)
-    
+
     try:
         if ai.selfAlive() == 1:
             if agent.SPAWN_QUAD is None:
@@ -477,7 +481,7 @@ def loop():
                 agent.SD = False
                 ai.setTurnSpeed(64.0)
                 agent.update_chrom_map()
-             
+
             # else:
             #    print("soul data else")
             #    agent.write_soul_data(agent.SPAWN_QUAD)
