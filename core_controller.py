@@ -198,10 +198,11 @@ class CoreAgent:
 
     def write_soul_data(self, quadrant, ftype="a", score=-9999):
         if score is -9999:
-            write_score = None
+            write_score = str(0)
         else:
             write_score = str(self.score - self.spawn_score)
         output = [str(quadrant), self.bin_chromosome, write_score]
+        print(write_score)
         Evolver.write_chromosome_to_file(output, "{}.json"
                                          .format(self.chrom_name), ftype)
         self.update_chrom_map()
