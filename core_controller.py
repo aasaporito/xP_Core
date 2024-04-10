@@ -194,8 +194,8 @@ class CoreAgent:
         elif victim == self.bot_name:
             self.last_death = output
 
-    def write_soul_data(self, quadrant, ftype="a", score=0.0):
-        if score is -9999:
+    def write_soul_data(self, quadrant, ftype="a", score=0):
+        if score == 0:
             write_score = str(0)
         else:
             write_score = str(self.score - self.spawn_score)
