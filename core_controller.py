@@ -153,6 +153,7 @@ class CoreAgent:
         	ftype = "a"
         	self.update_chrom_map()
         
+        
         self.write_soul_data(self.SPAWN_QUAD, ftype, None)
 
 
@@ -197,21 +198,25 @@ class CoreAgent:
             self.last_death = output
 
     def write_soul_data(self, quadrant, ftype="a", score=-9999):
-        if score is -9999:
-            write_score = str(0)
-        else:
-            write_score = str(self.score - self.spawn_score)
-        output = [str(quadrant), self.bin_chromosome, write_score]
-        print(write_score)
+        print(f"internal score: {score}")
+
+        output = [str(quadrant), self.bin_chromosome, score]
         Evolver.write_chromosome_to_file(output, "{}.json"
                                          .format(self.chrom_name), ftype)
         self.update_chrom_map()
+        self.spawn_score = self.score
 
     def was_killed(self):
         agent.update_score()
+        
         print(self.last_death)
-
+        print(f"Current Score: {self.score}")
+        print(f"Spawn Score: {self.spawn_score}")
+        
+        life_score = str(self.score - self.spawn_score)
+        print(f"Score to log: {life_score}")
         if "null" in self.last_death:
+            print("self death")
             # TODO : This will cause useless chromosomes to not be rewritten. Revisit
             # this condition. -5 to account for SD point loss
             # TODO: Is this why no negatives from wall crashes?
@@ -221,13 +226,14 @@ class CoreAgent:
             #                                     .format(self.chrom_name), "a")
                 
             self.push_chrom(int(self.SPAWN_QUAD), self.chrom_name)
-
+            self.write_soul_data(self.SPAWN_QUAD, "a", score = life_score)
             self.bin_chromosome = None
             self.SPAWN_QUAD = None
 
             return
 
         if ai.selfAlive() == 0 and self.crossover_completed is False:
+            print("killed")
             killer = self.get_mapping(self.last_death[0])
 
             new_chromosome_file_name = os.path.expanduser("~/Documents/xP_Core/data/{}.json"
@@ -244,10 +250,12 @@ class CoreAgent:
             cross_over_child = Evolver.crossover(self.bin_chromosome, new_chromosome)
             mutated_child = Evolver.mutate(cross_over_child, self.MUT_RATE)
 
-            output = [str(quadrant), mutated_child, str(self.score - self.spawn_score)]
+            output = [str(quadrant), mutated_child, life_score]
+            print(killer)
+            print("Killed ^")
            # Evolver.write_chromosome_to_file(output, "{}.json"
             #                                 .format(self.chrom_name), "a")
-            self.write_soul_data(self.SPAWN_QUAD, "a")
+            self.write_soul_data(self.SPAWN_QUAD, "a", score = life_score)
             # POST New chromosome
             self.push_chrom(quadrant, self.chrom_name)  # TODO switch to
             self.push_chrom(quadrant, self.chrom_name)
@@ -339,6 +347,7 @@ class CoreAgent:
     # re.json() automatically converts types in these cases
     def req_chrom(self, quadrant):
         re = requests.get(self.QUEUE_ADDR + "req_{}".format(quadrant))
+        print(re.text)
         chrom_name = re.json()["chromosome"]
 
         if chrom_name == -1:
