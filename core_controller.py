@@ -138,7 +138,7 @@ class CoreAgent:
                     file_length = len(f.readlines())
                     print("Name: " + self.chrom_name)
 
-                if file_length == 1:
+                if file_length == 2:
                     ftype = "w"
                     print("Rewriting file for: " + self.chrom_name)
                     
