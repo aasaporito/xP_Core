@@ -138,7 +138,7 @@ class CoreAgent:
                     file_length = len(f.readlines())
                     print("Name: " + self.chrom_name)
 
-                if file_length == 2:
+                if file_length == 1:
                     ftype = "w"
                     print("Rewriting file for: " + self.chrom_name)
                     
@@ -554,7 +554,7 @@ def main():
     global agent
     agent = None
     # ai.start(loop, ["-name", bot_name, "-join", "localhost"])
-    # ai.headlessMode()
+    ai.headlessMode()
     ai.start(
         loop, ["-name", bot_name, "-join", "NL210-Lin10138"])
 
