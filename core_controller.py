@@ -329,9 +329,9 @@ def main():
     bot_name = "CA_{}".format(sys.argv[1])
     global agent
     agent = None
-    # ai.start(loop, ["-name", bot_name, "-join", "localhost"])
-    ai.headlessMode()
-    ai.start(loop, ["-name", bot_name, "-join", "NL210-Lin10138"])
+    ai.start(loop, ["-name", bot_name, "-join", "localhost"])
+    # ai.headlessMode()
+    # ai.start(loop, ["-name", bot_name, "-join", "NL210-Lin10138"])
 
 
 if __name__ == "__main__":
