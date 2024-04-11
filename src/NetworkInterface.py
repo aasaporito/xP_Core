@@ -3,7 +3,7 @@ import os
 
 import requests
 
-from src import config
+import config
 
 
 class NetworkInterface:
