@@ -24,12 +24,11 @@ class CoreAgent(NetworkInterface, ShipData):
 
         self.bot_name = bot_name
 
-        ai.setPower(8)
+        ai.setPower(5)
 
         self.bin_chromosome = None
         self.dec_chromosome = None
         self.current_loop = None
-        self.chromosome_iteration = 0
         self.current_loop_idx = 0
         self.current_gene_idx = 0
 
@@ -93,7 +92,6 @@ class CoreAgent(NetworkInterface, ShipData):
 
         self.write_soul_data(self.SPAWN_QUAD, ftype, score=0.0)
 
-        self.chromosome_iteration += 1
         self.dec_chromosome = Evolver.read_chrome(self.bin_chromosome)
 
         self.last_kill = ["null", "null"]
