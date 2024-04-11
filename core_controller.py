@@ -91,7 +91,7 @@ class CoreAgent(NetworkInterface, ShipData):
             ftype = "a"
             self.update_chrom_map()
 
-        self.write_soul_data(self.SPAWN_QUAD, ftype, 0.0)
+        self.write_soul_data(self.SPAWN_QUAD, ftype, score=0.0)
 
         self.chromosome_iteration += 1
         self.dec_chromosome = Evolver.read_chrome(self.bin_chromosome)
@@ -134,7 +134,7 @@ class CoreAgent(NetworkInterface, ShipData):
         if score == 0.0:
             write_score = str(0.0)
         else:
-            write_score = str(score)
+            write_score = str(round(score, 3))
 
         output = [str(quadrant), self.bin_chromosome, write_score]
         print(write_score)
