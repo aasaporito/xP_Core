@@ -65,7 +65,7 @@ class CoreAgent(NetworkInterface, ShipData):
         if new_bin_chromosome is "" and self.initialized:
             with open(os.path.expanduser('~/Documents/xP_Core/data/{}.json'
                                                  .format(self.chrom_name)), 'r') as f:
-                self.bin_chromosome = json.loads(f.readlines()[-1])
+                self.bin_chromosome = json.loads(f.readlines()[-1])[1]
         else:
             self.bin_chromosome = new_bin_chromosome
         print("New Name: " + new_name)
@@ -143,6 +143,7 @@ class CoreAgent(NetworkInterface, ShipData):
             write_score = str(round(score, 3))
 
         output = [str(quadrant), self.bin_chromosome, write_score]
+        print(output)
         print(write_score)
 
         Evolver.write_chromosome_to_file(output, "{}.json"
