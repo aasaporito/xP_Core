@@ -73,6 +73,7 @@ class CoreAgent(NetworkInterface, ShipData):
 
         if not self.initialized:
             self.chrom_name = str(uuid.uuid4())[:8]
+            new_name = self.chrom_name
             self.bin_chromosome = Evolver.generate_chromosome()
             self.initialized = True
         elif new_name == "":
