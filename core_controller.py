@@ -62,6 +62,7 @@ class CoreAgent:
         self.shot_x = -1
         self.shot_y = -1
         self.angle_to_shot = -1
+        self.angle_to_enemy = -1
 
         self.generate_feelers(10)
         self.frames_dead = 0
@@ -70,7 +71,7 @@ class CoreAgent:
 
     def increment_gene_idx(self):
         self.current_gene_idx = (self.current_gene_idx + 1) \
-            % self.GENES_PER_LOOP
+                                % self.GENES_PER_LOOP
         return self.current_gene_idx
 
     def update_score(self):
@@ -154,7 +155,7 @@ class CoreAgent:
             ftype = "a"
             self.update_chrom_map()
 
-        self.write_soul_data(self.SPAWN_QUAD, ftype, None)
+        self.write_soul_data(self.SPAWN_QUAD, ftype, 0)
 
         self.chromosome_iteration += 1
         self.dec_chromosome = Evolver.read_chrome(self.bin_chromosome)
@@ -169,14 +170,13 @@ class CoreAgent:
     def process_server_feed(self):
         self.feed_history = []
         for i in range(5):
-            serverMessage = ai.scanGameMsg(i)
-            if self.bot_name in serverMessage \
-                    and "ratio" not in serverMessage \
-                    and "crashed" not in serverMessage \
-                    and "entered" not in serverMessage \
-                    and "suicide" not in serverMessage:
-
-                self.feed_history.append(serverMessage)
+            server_message = ai.scanGameMsg(i)
+            if self.bot_name in server_message \
+                    and "ratio" not in server_message \
+                    and "crashed" not in server_message \
+                    and "entered" not in server_message \
+                    and "suicide" not in server_message:
+                self.feed_history.append(server_message)
 
         killer = "null"
         victim = "null"
@@ -240,7 +240,6 @@ class CoreAgent:
 
             new_chromosome_file_name = os.path.expanduser("~/Documents/xP_Core/data/{}.json"
                                                           .format(killer))
-            new_chromosome = None
 
             print(new_chromosome_file_name)
             with open(new_chromosome_file_name, 'r') as f:
@@ -252,23 +251,20 @@ class CoreAgent:
             cross_over_child = Evolver.crossover(
                 self.bin_chromosome, new_chromosome)
             mutated_child = Evolver.mutate(cross_over_child, self.MUT_RATE)
+            self.bin_chromosome = mutated_child  # Set for soul write
 
-            output = [str(quadrant), mutated_child, life_score]
             print(killer)
             print("Killed ^")
-            # Evolver.write_chromosome_to_file(output, "{}.json"
-            #                                 .format(self.chrom_name), "a")
+
             self.write_soul_data(self.SPAWN_QUAD, "a", score=life_score)
             # POST New chromosome
             self.push_chrom(quadrant, self.chrom_name)  # TODO switch to
             self.push_chrom(quadrant, self.chrom_name)
 
             # Prep for fetching new chromosome
-            self.bin_chromosome = None
+            self.bin_chromosome = None  # Erase for new chromosome to load
             self.SPAWN_QUAD = None
-            # print(mutated_child)
 
-            # self.initialize_cga(quadrant)
             self.crossover_completed = True
             self.self_destructed = False
 
@@ -359,7 +355,7 @@ class CoreAgent:
 
         print("Succesfully recieved chromosome name")
         with open(os.path.expanduser('~/Documents/xP_Core/data/{}.json'
-                                     .format(chrom_name)), 'r') as f:
+                                             .format(chrom_name)), 'r') as f:
             chromosome_data = json.loads(f.readlines()[-1])
 
         return (chromosome_data[1], chrom_name)
@@ -530,7 +526,7 @@ def loop():
         else:
             agent.process_server_feed()
             agent.frames_dead += 1
-            #agent.SPAWN_QUAD = None
+            # agent.SPAWN_QUAD = None
             agent.X = -1
             agent.Y = -1
             if agent.frames_dead >= 5:
