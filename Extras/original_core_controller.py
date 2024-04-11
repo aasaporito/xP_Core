@@ -4,7 +4,7 @@ import sys
 import traceback
 from typing import Union, List, Any
 
-from src.chromosome import *
+from src.Evolver import *
 
 # All run-once instructions
 def setup(ai, heading, tracking) -> None:

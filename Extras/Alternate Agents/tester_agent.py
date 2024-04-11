@@ -3,7 +3,7 @@ import math
 import random
 import sys
 import traceback
-from src.chromosome import Evolver
+from src.Evolver import Evolver
 import requests
 
 

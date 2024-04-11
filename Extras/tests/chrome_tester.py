@@ -1,4 +1,4 @@
-from src.chromosome import Evolver
+from src.Evolver import Evolver
 
 
 def find_different_indices(s1, s2):

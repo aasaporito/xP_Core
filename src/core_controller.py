@@ -9,7 +9,7 @@ import time
 import config
 from NetworkInterface import NetworkInterface
 from ShipData import ShipData
-from chromosome import Evolver
+from Evolver import Evolver
 from ActionGene import ActionGene
 
 

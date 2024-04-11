@@ -1,7 +1,7 @@
 import libpyAI as ai
 from typing import List, Any, Optional
 
-from src.chromosome import readChrome, createDataFolder, generateChromosome
+from src.Evolver import readChrome, createDataFolder, generateChromosome
 
 
 class CoreAgent():

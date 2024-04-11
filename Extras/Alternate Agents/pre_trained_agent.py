@@ -5,7 +5,7 @@ import os
 import traceback
 from typing import Union, List, Any, Optional
 import shutil
-from src.chromosome import Evolver
+from src.Evolver import Evolver
 
 
 class CoreAgent():
