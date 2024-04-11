@@ -62,7 +62,7 @@ class CoreAgent(NetworkInterface, ShipData):
     def initialize_cga(self, quadrant):
         new_bin_chromosome, new_name = self.req_chrom(int(quadrant))
 
-        if new_bin_chromosome is "":
+        if new_bin_chromosome is "" and self.initialized:
             with open(os.path.expanduser('~/Documents/xP_Core/data/{}.json'
                                                  .format(self.chrom_name)), 'r') as f:
                 chromosome_data = json.loads(f.readlines()[-1])
