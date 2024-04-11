@@ -198,7 +198,7 @@ class CoreAgent:
         if score == 0:
             write_score = str(0)
         else:
-            write_score = str(self.score - self.spawn_score)
+            write_score = str(score)
 
         output = [str(quadrant), self.bin_chromosome, write_score]
         print(write_score)
@@ -215,7 +215,7 @@ class CoreAgent:
         print(f"Current Score: {self.score}")
         print(f"Spawn Score: {self.spawn_score}")
 
-        life_score = str(self.score - self.spawn_score)
+        life_score = self.score - self.spawn_score
         print(f"Score to log: {life_score}")
         if "null" in self.last_death:
             print("self death")
