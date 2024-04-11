@@ -1,6 +1,6 @@
 import math
 import random
-from Engine import libpyAI as ai
+from src.Engine import libpyAI as ai
 
 
 class ShipData:

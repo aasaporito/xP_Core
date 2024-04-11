@@ -1,12 +1,10 @@
 import libpyAI as ai
 import math
-import random
-import os
 import sys
 import traceback
 from typing import Union, List, Any
 
-from chromosome import *
+from src.chromosome import *
 
 # All run-once instructions
 def setup(ai, heading, tracking) -> None:

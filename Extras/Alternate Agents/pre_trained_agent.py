@@ -2,11 +2,10 @@ import libpyAI as ai
 import math
 import random
 import os
-import sys
 import traceback
 from typing import Union, List, Any, Optional
 import shutil
-from chromosome import Evolver
+from src.chromosome import Evolver
 
 
 class CoreAgent():

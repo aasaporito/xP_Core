@@ -3,8 +3,7 @@ import os
 
 import requests
 
-import config
-from chromosome import Evolver
+from src import config
 
 
 class NetworkInterface:

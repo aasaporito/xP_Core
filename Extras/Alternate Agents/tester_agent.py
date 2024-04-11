@@ -1,10 +1,9 @@
 import libpyAI as ai
 import math
 import random
-import os
 import sys
 import traceback
-from chromosome import Evolver
+from src.chromosome import Evolver
 import requests
 
 

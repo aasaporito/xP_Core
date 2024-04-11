@@ -1,12 +1,8 @@
 import libpyAI as ai
-import math
-import random
-import os
-import sys
-import traceback
-from typing import Union, List, Any, Optional
+from typing import List, Any, Optional
 
-from chromosome import readChrome, createDataFolder, crossover, mutate, generateChromosome, writeChromosomeToFile
+from src.chromosome import readChrome, createDataFolder, generateChromosome
+
 
 class CoreAgent():
     # Agent initializer
