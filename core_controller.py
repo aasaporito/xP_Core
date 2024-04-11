@@ -1,36 +1,29 @@
 import libpyAI as ai
-import math
-import random
 import os
 import sys
 import traceback
-from chromosome import Evolver
-import requests
 import json
 import uuid
 import time
 
+from NetworkInterface import NetworkInterface
+from ShipData import ShipData
+from chromosome import Evolver
+from ActionGene import ActionGene
 
-class CoreAgent:
+
+class CoreAgent(NetworkInterface, ShipData):
     def __init__(self, bot_name):
-        # print("Alive")
-        # self.QUEUE_ADDR = "http://localhost:8000/"
-        self.QUEUE_ADDR = "http://136.244.224.61:8000/"
+        NetworkInterface.__init__(self)
+        ShipData.__init__(self)
+
         self.MUT_RATE = 300
         self.GENES_PER_LOOP = 8
         self.chrom_name = ""
         self.SPAWN_QUAD = None
 
         self.bot_name = bot_name
-        self.heading = float(ai.selfHeadingDeg())
-        self.tracking = float(ai.selfTrackingDeg())
-        self.headingFeelers = []
-        self.trackingFeelers = []
 
-        self.X = -1
-        self.Y = -1
-        self.heading = 90.0
-        self.speed = -1
         ai.setPower(8)
 
         self.bin_chromosome = None
@@ -52,22 +45,11 @@ class CoreAgent:
         self.prior_death = ["null", "null"]
         self.crossover_completed = False
 
-        self.enemy_dist = -1
-        self.enemy_dir = -1
-        self.enemy_x = -1
-        self.enemy_y = -1
-        self.enemy_speed = -1
-        self.enemy_heading = -1
-        self.closest_bullet_distance = -1
-        self.shot_x = -1
-        self.shot_y = -1
-        self.angle_to_shot = -1
-        self.angle_to_enemy = -1
-
         self.generate_feelers(10)
         self.frames_dead = 0
 
         self.ping_server()
+        print("server ping")
 
     def increment_gene_idx(self):
         self.current_gene_idx = (self.current_gene_idx + 1) \
@@ -76,52 +58,6 @@ class CoreAgent:
 
     def update_score(self):
         self.score = ai.selfScore()
-
-    def update_agent_data(self):
-        self.X = int(ai.selfX())
-        self.Y = int(ai.selfY())
-        self.speed = float(ai.selfSpeed())
-
-    def update_enemy_data(self):
-        closest_ship_id = int(ai.closestShipId())
-        if closest_ship_id != -1:
-            self.enemy_dist = float(ai.enemyDistanceId(closest_ship_id))
-            self.enemy_x = int(ai.screenEnemyXId(closest_ship_id))
-            self.enemy_y = int(ai.screenEnemyYId(closest_ship_id))
-            self.enemy_speed = float(ai.enemySpeedId(closest_ship_id))
-            self.enemy_heading = float(ai.enemyHeadingDegId(closest_ship_id))
-            self.angle_to_enemy = int(self.find_angle())
-            self.enemy_dir = self.get_enemy_dir()
-        else:
-            self.enemy_dist = -1
-            self.enemy_x = -1
-            self.enemy_y = -1
-            self.enemy_speed = -1
-            self.enemy_heading = -1
-            self.angle_to_enemy = -1
-            self.enemy_dir = -1
-
-    def update_bullet_data(self):
-        if ai.shotDist(0) > 0:
-            self.closest_bullet_distance = float(ai.shotDist(0))
-            self.shot_x = ai.shotX(0)
-            self.shot_y = ai.shotY(0)
-            self.angle_to_shot = self.find_angle("bullet")
-        else:
-            self.closest_bullet_distance = -1
-            self.shot_x = -1
-            self.shot_y = -1
-            self.angle_to_shot = -1
-
-    def generate_feelers(self, step):
-        for angle in range(0, 360, step):
-            self.trackingFeelers.append(
-                ai.wallFeeler(500, int(self.tracking + angle)))
-        for angle in range(0, 360, step):
-            self.headingFeelers.append(
-                ai.wallFeeler(500, int(self.heading + angle)))
-        self.heading = float(ai.selfHeadingDeg())
-        self.tracking = float(ai.selfTrackingDeg())
 
     def initialize_cga(self, quadrant):
         self.bin_chromosome, new_name = self.req_chrom(int(quadrant))
@@ -137,7 +73,7 @@ class CoreAgent:
             try:
                 # Rewrite if it is a single generation failed chromosome
                 with open(os.path.expanduser('~/Documents/xP_Core/data/{}.json'
-                                             .format(self.chrom_name)), 'r') as f:
+                                                     .format(self.chrom_name)), 'r') as f:
                     file_length = len(f.readlines())
                     print("Name: " + self.chrom_name)
 
@@ -219,13 +155,6 @@ class CoreAgent:
         print(f"Score to log: {life_score}")
         if "null" in self.last_death:
             print("self death")
-            # TODO : This will cause useless chromosomes to not be rewritten. Revisit
-            # this condition. -5 to account for SD point loss
-            # TODO: Is this why no negatives from wall crashes?
-            # if self.score - 5 >= self.spawn_score:
-            #    output = [str(self.SPAWN_QUAD), self.bin_chromosome, str(self.score - self.spawn_score)]
-            #    Evolver.write_chromosome_to_file(output, "{}.json"
-            #                                     .format(self.chrom_name), "a")
 
             self.push_chrom(int(self.SPAWN_QUAD), self.chrom_name)
             self.write_soul_data(self.SPAWN_QUAD, "a", score=life_score)
@@ -266,201 +195,50 @@ class CoreAgent:
             self.SPAWN_QUAD = None
 
             self.crossover_completed = True
-            self.self_destructed = False
 
-    def find_min_wall_angle(self, wallFeelers):
-        min_wall = min(wallFeelers)
-        min_index = wallFeelers.index(min_wall)
+    def find_min_wall_angle(self, wall_feelers):
+        min_wall = min(wall_feelers)
+        min_index = wall_feelers.index(min_wall)
         angle = int(10 * min_index)
         return angle if angle < 180 else angle - 360
 
-    def find_max_wall_angle(self, wallFeelers):
-        max_wall = max(wallFeelers)
-        max_index = wallFeelers.index(max_wall)
+    def find_max_wall_angle(self, wall_feelers):
+        max_wall = max(wall_feelers)
+        max_index = wall_feelers.index(max_wall)
         angle = int(10 * max_index)
         return angle if angle < 180 else angle - 360
 
-    def find_angle(self, param=None):
-        if param is None:
-            new_enemy_x = self.enemy_x - self.X
-            new_enemy_y = self.enemy_y - self.Y
-        else:
-            new_enemy_x = self.shot_x - self.X
-            new_enemy_y = self.shot_y - self.Y
-        enemy_angle = -1
-        try:
-            enemy_angle = math.degrees(math.atan(new_enemy_y / new_enemy_x))
-        except:
-            enemy_angle = 0
-        angle_to_enemy = int(self.heading - enemy_angle)
-        return angle_to_enemy if angle_to_enemy < 360 - angle_to_enemy else angle_to_enemy - 360
-
     def check_conditional(self, conditional_index):
-        min_wall_dist = min(self.headingFeelers)
-        conditional_list = [self.speed < 6, self.speed == 0, self.enemy_dist < 50, self.headingFeelers[0] < 100,
-                            self.enemy_dist < 150 and self.enemy_dir == 1,
-                            self.enemy_dist < 150 and self.enemy_dir == 2,
-                            self.enemy_dist < 100 and self.enemy_dir == 3,
-                            self.enemy_dist < 100 and self.enemy_dir == 4,
+        min_wall_dist = min(self.agent_data["head_feelers"])
+        conditional_list = [self.agent_data["speed"] < 6, self.agent_data["speed"] == 0,
+                            self.enemy_data["distance"] < 50, self.agent_data["head_feelers"][0] < 100,
+                            self.enemy_data["distance"] < 150 and self.enemy_data["direction"] == 1,
+                            self.enemy_data["distance"] < 150 and self.enemy_data["direction"] == 2,
+                            self.enemy_data["distance"] < 100 and self.enemy_data["direction"] == 3,
+                            self.enemy_data["distance"] < 100 and self.enemy_data["direction"] == 4,
                             min_wall_dist < 200, min_wall_dist < 75, min_wall_dist > 300, min_wall_dist < 150,
-                            self.closest_bullet_distance < 100, self.closest_bullet_distance < 200,
-                            self.closest_bullet_distance < 50, self.enemy_dist == -1]
+                            self.bullet_data["distance"] < 100, self.bullet_data["distance"] < 200,
+                            self.bullet_data["distance"] < 50, self.enemy_data["distance"] == -1]
         return conditional_list[conditional_index]
 
-    def wall_between_target(self):
-        return ai.wallBetween(int(self.X), int(self.Y), int(self.enemy_x), int(self.enemy_y)) != -1
-
-    def get_enemy_dir(self):
-        direction = -1
-        theta = None
-        wall_pre_enemy = False
-        shot_tolerance = random.randint(-5, 5)
-
-        if self.enemy_dist != -1:
-            x_dist_to_enemy = self.enemy_x - self.X
-            y_dist_to_enemy = self.enemy_y - self.Y
-            theta = self.find_angle()
-            wall_pre_enemy = self.wall_between_target()
-        else:
-            return -1
-
-        if self.enemy_dist and x_dist_to_enemy > 0 and y_dist_to_enemy > 0 and not wall_pre_enemy:
-            direction = 1
-        elif self.enemy_dist and x_dist_to_enemy < 0 and y_dist_to_enemy > 0 and not wall_pre_enemy:
-            direction = 2
-        elif self.enemy_dist and x_dist_to_enemy < 0 and y_dist_to_enemy < 0 and not wall_pre_enemy:
-            direction = 3
-        elif self.enemy_dist and x_dist_to_enemy > 0 and y_dist_to_enemy < 0 and not wall_pre_enemy:
-            direction = 4
-        return direction
-
-    def push_chrom(self, quadrant, chrom_name):
-        data = {"quadrant": quadrant, "file_name": chrom_name}
-        re = requests.post(self.QUEUE_ADDR + "post", json=data)
-
-        if re.status_code == 200:
-            print("Sucessfully pushed to QS")
-        else:
-            print("Error pushing to QS")
-
-    # re.json() automatically converts types in these cases
-    def req_chrom(self, quadrant):
-        re = requests.get(self.QUEUE_ADDR + "req_{}".format(quadrant))
-        print(re.text)
-        chrom_name = re.json()["chromosome"]
-
-        if chrom_name == -1:
-            print("No available chromosome, generating new chromosome")
-            return (Evolver.generate_chromosome(), "")
-
-        print("Succesfully recieved chromosome name")
-        with open(os.path.expanduser('~/Documents/xP_Core/data/{}.json'
-                                             .format(chrom_name)), 'r') as f:
-            chromosome_data = json.loads(f.readlines()[-1])
-
-        return (chromosome_data[1], chrom_name)
-
-    def ping_server(self):
-        requests.get(self.QUEUE_ADDR + "is_alive")
-
     def set_spawn_quad(self):
-        print("X: {}".format(agent.X))
-        print("Y: {}".format(agent.Y))
+        print("X: {}".format(self.agent_data["X"]))
+        print("Y: {}".format(self.agent_data["Y"]))
 
-        if agent.SPAWN_QUAD is None and agent.X != -1:
-            SPAWN_X = agent.X - 4500
-            SPAWN_Y = agent.Y - 4500
+        if agent.SPAWN_QUAD is None and self.agent_data["X"] != -1:
+            spawn_x = self.agent_data["X"] - 4500
+            spawn_y = self.agent_data["Y"] - 4500
 
-            if SPAWN_X >= 0 and SPAWN_Y >= 0:
+            if spawn_x >= 0 and spawn_y >= 0:
                 agent.SPAWN_QUAD = 1
-            elif SPAWN_X < 0 and SPAWN_Y >= 0:
+            elif spawn_x < 0 and spawn_y >= 0:
                 agent.SPAWN_QUAD = 2
-            elif SPAWN_X < 0 and SPAWN_Y < 0:
+            elif spawn_x < 0 and spawn_y < 0:
                 agent.SPAWN_QUAD = 3
             else:
                 agent.SPAWN_QUAD = 4
 
         return agent.SPAWN_QUAD
-
-    def update_chrom_map(self):
-        requests.post(self.QUEUE_ADDR + "update_map",
-                      json={"agent_name": self.bot_name, "chrom_file": self.chrom_name})
-
-    # This should always return a file name (without extension)
-    def get_mapping(self, bot_name):
-        r = requests.get(self.QUEUE_ADDR + "get_map_{}".format(bot_name))
-        return r.json()[0]
-
-
-class ActionGene:
-    def __init__(self, gene, agent):
-        if gene[0] is False:
-            print(gene)
-            print("Unexpected action gene found")
-            return None
-        self.agent = agent
-        self.shoot = gene[1]
-        self.thrust = 1 if gene[2] else 0
-        self.turn_quantity = int((gene[3] + 0) * 5)  # Prev + 3 * 2
-        self.turn_target = gene[4]
-
-        self.act()
-
-    def turn(self):
-        match self.turn_target:
-            case 0:
-                angle = agent.find_min_wall_angle(agent.headingFeelers)
-                if angle < 0:
-                    ai.turn(-1 * self.turn_quantity)
-                elif angle > 0:
-                    ai.turn(self.turn_quantity)
-            case 1:
-                angle = agent.find_min_wall_angle(agent.headingFeelers)
-                if angle > 0:
-                    ai.turn(-1 * self.turn_quantity)
-                elif angle < 0:
-                    ai.turn(self.turn_quantity)
-            case 2:
-                angle = agent.find_max_wall_angle(agent.headingFeelers)
-                if angle < 0:
-                    ai.turn(-1 * self.turn_quantity)
-                elif angle > 0:
-                    ai.turn(self.turn_quantity)
-            case 3:
-                angle = agent.find_max_wall_angle(agent.headingFeelers)
-                if angle > 0:
-                    ai.turn(-1 * self.turn_quantity)
-                elif angle < 0:
-                    ai.turn(self.turn_quantity)
-            case 4:
-                if agent.enemy_dist is not None:
-                    if agent.angle_to_enemy < 0:
-                        ai.turn(-1 * self.turn_quantity)
-                    elif agent.angle_to_enemy > 0:
-                        ai.turn(self.turn_quantity)
-            case 5:
-                if agent.enemy_dist is not None:
-                    if agent.angle_to_enemy > 0:
-                        ai.turn(-1 * self.turn_quantity)
-                    else:
-                        ai.turn(self.turn_quantity)
-            case 6:
-                if agent.shot_x != -1:
-                    if agent.angle_to_shot < 0:
-                        ai.turn(-1 * self.turn_quantity)
-                    elif agent.angle_to_shot > 0:
-                        ai.turn(self.turn_quantity)
-            case 7:
-                if agent.shot_x != -1:
-                    if agent.angle_to_shot > 0:
-                        ai.turn(-1 * self.turn_quantity)
-                    elif agent.angle_to_shot < 0:
-                        ai.turn(self.turn_quantity)
-
-    def act(self):
-        ai.thrust(self.thrust)
-        ai.fireShot() if self.shoot else None
-        self.turn()
 
 
 def loop():
@@ -478,14 +256,10 @@ def loop():
                 ai.setTurnSpeed(64.0)
                 agent.update_chrom_map()
 
-            # else:
-            #    print("soul data else")
-            #    agent.write_soul_data(agent.SPAWN_QUAD)
-
             if agent.SPAWN_QUAD is not None and agent.bin_chromosome is None:
                 agent.initialize_cga(agent.SPAWN_QUAD)
 
-            if agent.X != ai.selfX() or agent.Y != ai.selfY():
+            if agent.agent_data["X"] != ai.selfX() or agent.agent_data["Y"] != ai.selfY():
                 agent.movement_timer = time.time()
 
             if agent.movement_timer == -1.0:
@@ -500,14 +274,15 @@ def loop():
 
             if agent.bin_chromosome is not None:
                 agent.frames_dead = 0
+
                 agent.update_agent_data()
                 agent.update_enemy_data()
                 agent.update_bullet_data()
                 agent.update_score()
+
                 agent.crossover_completed = False
                 gene = agent.current_loop[agent.current_gene_idx]
 
-                # print("Gene: {}".format(gene))
                 if Evolver.is_jump_gene(gene):
                     if agent.check_conditional(gene[1]):
                         agent.current_loop_idx = gene[2]
@@ -527,8 +302,8 @@ def loop():
             agent.process_server_feed()
             agent.frames_dead += 1
             # agent.SPAWN_QUAD = None
-            agent.X = -1
-            agent.Y = -1
+            agent.agent_data["X"] = -1
+            agent.agent_data["Y"] = -1
             if agent.frames_dead >= 5:
                 agent.was_killed()
                 agent.frames_dead = -2000
@@ -555,8 +330,7 @@ def main():
     agent = None
     # ai.start(loop, ["-name", bot_name, "-join", "localhost"])
     ai.headlessMode()
-    ai.start(
-        loop, ["-name", bot_name, "-join", "NL210-Lin10138"])
+    ai.start(loop, ["-name", bot_name, "-join", "NL210-Lin10138"])
 
 
 if __name__ == "__main__":
