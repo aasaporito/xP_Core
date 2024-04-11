@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 
-import config
+from .. import config
 
 
 class ChromeID(BaseModel):
