@@ -16,6 +16,7 @@ class CoreAgent(NetworkInterface, ShipData):
     def __init__(self, bot_name):
         NetworkInterface.__init__(self)
         ShipData.__init__(self)
+        self.initialized = False
 
         self.MUT_RATE = 300
         self.GENES_PER_LOOP = 8
@@ -61,10 +62,12 @@ class CoreAgent(NetworkInterface, ShipData):
     def initialize_cga(self, quadrant):
         self.bin_chromosome, new_name = self.req_chrom(int(quadrant))
         print("New Name: " + new_name)
-        print(new_name == "")
         ftype = "a"
 
-        if new_name == "" and self.chrom_name == "":
+        if not self.initialized:
+            self.chrom_name = str(uuid.uuid4())[:8]
+            self.initialized = True
+        elif new_name == "" and self.chrom_name == "":
             self.chrom_name = str(uuid.uuid4())[:8]
             print("Generating new chromosome name (initial chromosomes only): "
                   + self.chrom_name)
