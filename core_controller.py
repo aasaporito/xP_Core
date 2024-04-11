@@ -63,7 +63,9 @@ class CoreAgent(NetworkInterface, ShipData):
         new_bin_chromosome, new_name = self.req_chrom(int(quadrant))
 
         if new_bin_chromosome is "":
-            self.bin_chromosome = self.bin_chromosome
+            with open(os.path.expanduser('~/Documents/xP_Core/data/{}.json'
+                                                 .format(self.chrom_name)), 'r') as f:
+                chromosome_data = json.loads(f.readlines()[-1])
         else:
             self.bin_chromosome = new_bin_chromosome
         print("New Name: " + new_name)
