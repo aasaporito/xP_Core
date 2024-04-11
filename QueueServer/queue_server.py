@@ -1,4 +1,7 @@
-from fastapi import FastAPI
+import logging
+from fastapi import FastAPI, Request, status
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 import sys
@@ -29,13 +32,6 @@ stats = {"connections": 0, "error_requests": 0}
 
 
 queues = [queue_1, queue_2, queue_3, queue_4]
-app = FastAPI() 
-
-
-import logging
-from fastapi import FastAPI, Request, status
-from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
 
 app = FastAPI()
 
