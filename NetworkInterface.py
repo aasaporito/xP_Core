@@ -27,7 +27,7 @@ class NetworkInterface:
 
         if chrom_name == -1:
             print("No available chromosome, generating new chromosome")
-            return Evolver.generate_chromosome(), ""
+            return "", ""
 
         print("Succesfully recieved chromosome name")
         with open(os.path.expanduser('~/Documents/xP_Core/data/{}.json'

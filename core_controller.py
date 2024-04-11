@@ -60,17 +60,19 @@ class CoreAgent(NetworkInterface, ShipData):
         self.score = ai.selfScore()
 
     def initialize_cga(self, quadrant):
-        self.bin_chromosome, new_name = self.req_chrom(int(quadrant))
+        new_bin_chromosome, new_name = self.req_chrom(int(quadrant))
+
+        if new_bin_chromosome is "":
+            self.bin_chromosome = self.bin_chromosome
+        else:
+            self.bin_chromosome = new_bin_chromosome
         print("New Name: " + new_name)
         ftype = "a"
 
         if not self.initialized:
             self.chrom_name = str(uuid.uuid4())[:8]
+            self.bin_chromosome = Evolver.generate_chromosome()
             self.initialized = True
-        elif new_name == "" and self.chrom_name == "":
-            self.chrom_name = str(uuid.uuid4())[:8]
-            print("Generating new chromosome name (initial chromosomes only): "
-                  + self.chrom_name)
         elif new_name == "":
             try:
                 # Rewrite if it is a single generation failed chromosome
@@ -79,7 +81,7 @@ class CoreAgent(NetworkInterface, ShipData):
                     file_length = len(f.readlines())
                     print("Name: " + self.chrom_name)
 
-                if file_length == 2:
+                if file_length == 3:
                     ftype = "w"
                     print("Rewriting file for: " + self.chrom_name)
 
