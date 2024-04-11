@@ -155,7 +155,7 @@ class CoreAgent:
             ftype = "a"
             self.update_chrom_map()
 
-        self.write_soul_data(self.SPAWN_QUAD, ftype, 0)
+        self.write_soul_data(self.SPAWN_QUAD, ftype, 0.0)
 
         self.chromosome_iteration += 1
         self.dec_chromosome = Evolver.read_chrome(self.bin_chromosome)
@@ -194,9 +194,9 @@ class CoreAgent:
         elif victim == self.bot_name:
             self.last_death = output
 
-    def write_soul_data(self, quadrant, ftype="a", score=0):
-        if score == 0:
-            write_score = str(0)
+    def write_soul_data(self, quadrant, ftype="a", score=0.0):
+        if score == 0.0:
+            write_score = str(0.0)
         else:
             write_score = str(score)
 
