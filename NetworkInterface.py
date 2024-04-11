@@ -3,13 +3,13 @@ import os
 
 import requests
 
+import config
 from chromosome import Evolver
 
 
 class NetworkInterface:
     def __init__(self):
-        self.QUEUE_ADDR = "http://localhost:8000/"
-        # self.QUEUE_ADDR = "http://136.244.224.61:8000/"
+        self.QUEUE_ADDR = "http://" + config.QUEUE_ADDR + ":8000/"
 
     def push_chrom(self, quadrant, chrom_name):
         data = {"quadrant": quadrant, "file_name": chrom_name}

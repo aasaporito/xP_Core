@@ -6,6 +6,7 @@ import json
 import uuid
 import time
 
+import config
 from NetworkInterface import NetworkInterface
 from ShipData import ShipData
 from chromosome import Evolver
@@ -335,8 +336,9 @@ def main():
     bot_name = "CA_{}".format(sys.argv[1])
     global agent
     agent = None
-    ai.start(loop, ["-name", bot_name, "-join", "localhost"])
-    # ai.headlessMode()
+    ai.start(loop, ["-name", bot_name, "-join", config.SERVER_IP])
+    if config.HEADLESS:
+        ai.headlessMode()
     # ai.start(loop, ["-name", bot_name, "-join", "NL210-Lin10138"])
 
 
