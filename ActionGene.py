@@ -1,4 +1,4 @@
-import libpyAI as ai
+from Engine import libpyAI as ai
 
 class ActionGene:
     def __init__(self, gene, agent):
