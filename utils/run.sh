@@ -15,7 +15,7 @@ sleep 3;
 # Start Server
 echo "Starting Xpilots Server";
 # switchBase 1 = 100% probability to swap bases on death, + teams disables teams
-~/Documents/xP_Core/src/Engine/xpilots -map ~/Documents/xP_Core/src/Engine/maps/core.xp -noquit -switchBase 1.0 +teamPlay -maxRoundTime 60 -roundsToPlay 0 +limitedLives -maxClientsPerIP 32  > xpilots.log &
+~/Documents/xP_Core/src/Engine/xpilots -map ~/Documents/xP_Core/src/Engine/maps/core.xp -noquit -switchBase 1.0 +teamPlay -maxRoundTime 60 -roundsToPlay 0 +limitedLives -maxClientsPerIP 32  > /dev/null 2>&1  &
 
 
 # Slurms: 1,3,4,7,8,10,11,12,14,17
