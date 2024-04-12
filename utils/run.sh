@@ -27,15 +27,15 @@ python3 ~/Documents/xP_Core/src/core_controller.py $RANDOM > /dev/null 2>&1 &
 
 
 echo "Starting Agents on slurm servers";
-ssh -X slurm03 "~/Documents/xP_Core/utils/launcher.sh" &
-ssh -X slurm04 "~/Documents/xP_Core/utils/launcher.sh" &
-ssh -X slurm08 "~/Documents/xP_Core/utils/launcher.sh" &
-ssh -X slurm10 "~/Documents/xP_Core/utils/launcher.sh" &
-ssh -X slurm11 "~/Documents/xP_Core/utils/launcher.sh" &
-ssh -X slurm12 "~/Documents/xP_Core/utils/launcher.sh" &
-ssh -X slurm13 "~/Documents/xP_Core/utils/launcher.sh" &
-ssh -X slurm14 "~/Documents/xP_Core/utils/launcher.sh" &
-ssh -X slurm17 "~/Documents/xP_Core/utils/launcher.sh" &
+ssh -X slurm03 "~/Documents/xP_Core/utils/launcher.sh" > /dev/null 2>&1  &
+ssh -X slurm04 "~/Documents/xP_Core/utils/launcher.sh" > /dev/null 2>&1  &
+ssh -X slurm08 "~/Documents/xP_Core/utils/launcher.sh" > /dev/null 2>&1  &
+ssh -X slurm10 "~/Documents/xP_Core/utils/launcher.sh" > /dev/null 2>&1  &
+ssh -X slurm11 "~/Documents/xP_Core/utils/launcher.sh" > /dev/null 2>&1  &
+ssh -X slurm12 "~/Documents/xP_Core/utils/launcher.sh" > /dev/null 2>&1  &
+ssh -X slurm13 "~/Documents/xP_Core/utils/launcher.sh" > /dev/null 2>&1  &
+ssh -X slurm14 "~/Documents/xP_Core/utils/launcher.sh" > /dev/null 2>&1  &
+ssh -X slurm17 "~/Documents/xP_Core/utils/launcher.sh" > /dev/null 2>&1  &
 
 echo "Finished launching agents. Exiting.";
 exit;
