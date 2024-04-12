@@ -9,7 +9,7 @@ mkdir ~/Documents/xP_Core/tracebacks;
 echo "Wiped data & traceback folder";
 
 echo "Launching Queue Server";
-python3 ~/Documents/xP_Core/QueueServer/queue_server.py & # > queue_server.log &
+python3 ~/Documents/xP_Core/src/QueueServer/queue_server.py > queue_server.log &
 sleep 3;
 
 # Start Server
