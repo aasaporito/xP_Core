@@ -1,5 +1,5 @@
-# SERVER_IP = "NL210-Lin10138"
-SERVER_IP = "localhost"
-HEADLESS = False
-QUEUE_ADDR = "localhost"
-# QUEUE_ADDR = "136.244.224.61"
+SERVER_IP = "NL210-Lin10138"
+# SERVER_IP = "localhost"
+HEADLESS = True
+# QUEUE_ADDR = "localhost"
+QUEUE_ADDR = "136.244.224.61"
