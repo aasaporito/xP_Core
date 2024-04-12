@@ -36,3 +36,6 @@ ssh -X slurm12 "~/Documents/xP_Core/utils/launcher.sh" &
 ssh -X slurm13 "~/Documents/xP_Core/utils/launcher.sh" &
 ssh -X slurm14 "~/Documents/xP_Core/utils/launcher.sh" &
 ssh -X slurm17 "~/Documents/xP_Core/utils/launcher.sh" &
+
+echo "Finished launching agents. Exiting.";
+exit;
