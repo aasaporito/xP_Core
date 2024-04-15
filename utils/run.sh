@@ -2,9 +2,11 @@
 
 rm -r ~/Documents/xP_Core/data;
 rm -r ~/Documents/xP_Core/tracebacks;
+rm -r ~/Documents/xP_Core/logs;
 
 mkdir ~/Documents/xP_Core/data;
 mkdir ~/Documents/xP_Core/tracebacks;
+mkdir ~/Documents/xP_Core/logs;
 
 echo "Wiped data & traceback folder";
 
