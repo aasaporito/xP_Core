@@ -23,8 +23,8 @@ echo "Starting Xpilots Server";
 # Slurms: 1,3,4,7,8,10,11,12,14,17
 # server on slurm01
 echo "Starting local agents";
-python3 ~/Documents/xP_Core/src/core_controller.py $RANDOM > /dev/null 2>&1  &
-python3 ~/Documents/xP_Core/src/core_controller.py $RANDOM > /dev/null 2>&1 &
+python3 ~/Documents/xP_Core/src/core_controller.py $RANDOM </dev/null > /dev/null 2>&1  &
+python3 ~/Documents/xP_Core/src/core_controller.py $RANDOM </dev/null > /dev/null 2>&1 &
 
 
 
