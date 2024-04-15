@@ -64,9 +64,15 @@ class CoreAgent(NetworkInterface, ShipData):
         new_bin_chromosome, new_name = self.req_chrom(int(quadrant))
 
         if new_bin_chromosome == "" and self.initialized:
-            with open(os.path.expanduser('~/Documents/xP_Core/data/{}.json'
-                                                 .format(self.chrom_name)), 'r') as f:
-                self.bin_chromosome = json.loads(f.readlines()[-1])[1]
+            path = os.path.expanduser('~/Documents/xP_Core/data/{}.json'
+                                      .format(self.chrom_name))
+            with open(path, 'r') as f:
+                try:
+                    self.bin_chromosome = json.loads(f.readlines()[-1])[1]
+                except Exception as e:
+                    self.fix_chrom_file(path)
+                    self.bin_chromosome = json.loads(f.readlines()[-1])[1]
+
         else:
             self.bin_chromosome = new_bin_chromosome
         print("New Name: " + new_name)
@@ -177,10 +183,14 @@ class CoreAgent(NetworkInterface, ShipData):
 
             new_chromosome_file_name = os.path.expanduser("~/Documents/xP_Core/data/{}.json"
                                                           .format(killer))
-
             print(new_chromosome_file_name)
+
             with open(new_chromosome_file_name, 'r') as f:
-                chromosome_data = json.loads(f.readlines()[-1])
+                try:
+                    chromosome_data = json.loads(f.readlines()[-1])
+                except Exception as e:
+                    self.fix_chrom_file(new_chromosome_file_name)
+                    chromosome_data = json.loads(f.readlines()[-1])
 
             new_chromosome = chromosome_data[1]
             quadrant = chromosome_data[0]
@@ -247,6 +257,29 @@ class CoreAgent(NetworkInterface, ShipData):
                 agent.SPAWN_QUAD = 4
 
         return agent.SPAWN_QUAD
+
+    def fix_chrom_file(self, path):
+        with open(path, 'w') as file:
+            # Move the pointer (similar to a cursor in a text editor) to the end of the file
+            file.seek(0, os.SEEK_END)
+
+            # This code means the following code skips the very last character in the file -
+            # i.e. in the case the last line is null we delete the last line
+            # and the penultimate one
+            pos = file.tell() - 1
+
+            # Read each character in the file one at a time from the penultimate
+            # character going backwards, searching for a newline character
+            # If we find a new line, exit the search
+            while pos > 0 and file.read(1) != "\n":
+                pos -= 1
+                file.seek(pos, os.SEEK_SET)
+
+            # So long as we're not at the start of the file, delete all the characters ahead
+            # of this position
+            if pos > 0:
+                file.seek(pos, os.SEEK_SET)
+                file.truncate()
 
 
 def loop():
