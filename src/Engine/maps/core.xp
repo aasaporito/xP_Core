@@ -250,8 +250,8 @@ tankkillscoremult : 0.44
 runoverkillscoremult : 0.33
 ballkillscoremult : 1.0
 explosionkillscoremult : 0.33
-shovekillscoremult : 0.5
-crashscoremult : 0.33
+shovekillscoremult : 1
+crashscoremult : 1
 minescoremult : 0.17
 tankscoredecrement : 500
 asteroidpoints : 1.0
