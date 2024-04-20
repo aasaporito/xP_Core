@@ -100,13 +100,17 @@ async def post_data(chromosome: ChromeID):
         stats["error_requests"] += 1
 
     if chromosome.quadrant == 1:
-        queue_1.append(chromosome.file_name)
+        if queue_1.count(chromosome.file_name) < 3:
+            queue_1.append(chromosome.file_name)
     elif chromosome.quadrant == 2:
-        queue_2.append(chromosome.file_name)
+        if queue_2.count(chromosome.file_name) < 3:
+            queue_2.append(chromosome.file_name)
     elif chromosome.quadrant == 3:
-        queue_3.append(chromosome.file_name)
+        if queue_3.count(chromosome.file_name) < 3:
+            queue_3.append(chromosome.file_name)
     elif chromosome.quadrant == 4:
-        queue_4.append(chromosome.file_name)
+        if queue_4.count(chromosome.file_name) < 3:
+            queue_4.append(chromosome.file_name)
 
     print("Chromosome added to Q:{}".format(chromosome.quadrant))
 
