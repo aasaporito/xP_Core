@@ -228,15 +228,16 @@ class CoreAgent(NetworkInterface, ShipData):
 
     def check_conditional(self, conditional_index):
         min_wall_dist = min(self.agent_data["head_feelers"])
-        conditional_list = [self.agent_data["speed"] < 6, self.agent_data["speed"] == 0,
+        conditional_list = [self.agent_data["speed"] < 6, self.agent_data["speed"] > 10,
                             self.enemy_data["distance"] < 50, self.agent_data["head_feelers"][0] < 100,
-                            self.enemy_data["distance"] < 150 and self.enemy_data["direction"] == 1,
+                            self.enemy_data["distance"] < 200 and self.enemy_data["direction"] == 1,
                             self.enemy_data["distance"] < 150 and self.enemy_data["direction"] == 2,
                             self.enemy_data["distance"] < 100 and self.enemy_data["direction"] == 3,
                             self.enemy_data["distance"] < 100 and self.enemy_data["direction"] == 4,
-                            min_wall_dist < 200, min_wall_dist < 75, min_wall_dist > 300, min_wall_dist < 150,
+                            min_wall_dist < 75, min_wall_dist < 200, min_wall_dist > 300,
                             self.bullet_data["distance"] < 100, self.bullet_data["distance"] < 200,
-                            self.bullet_data["distance"] < 50, self.enemy_data["distance"] == -1]
+                            self.bullet_data["distance"] < 50, self.enemy_data["distance"] == -1,
+                            self.agent_data["speed"] == 0]
         return conditional_list[conditional_index]
 
     def set_spawn_quad(self):

@@ -3,8 +3,9 @@ import json
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+from scipy.stats import pearsonr
 
-FOLDER_NAME = "run10"
+FOLDER_NAME = "run11"
 os.mkdir(f"plots_{FOLDER_NAME}")
 def read_json_files(directory):
     """
@@ -43,6 +44,8 @@ def convert_to_dataframe(data):
 def plot_all(directory):
     """
     """
+    BULK_DF = pd.DataFrame(columns=['Quadrant', 'Chromosome', 'Score', 'Iteration'])
+
     plt.figure(figsize=(80, 20))  # Adjust the width and height as needed
     for filename in os.listdir(directory):
         data = []
@@ -76,14 +79,29 @@ def plot_all(directory):
         df['Chromosome'] = [','.join(map(str, l)) for l in df['Chromosome']]
         df.drop_duplicates(inplace=True)
         df.reset_index(drop=True, inplace=True)
+        df['Iteration'] = df.index
 
         # Plot
-        plt.plot(df.index, df['Score'], marker='x', linestyle='-', label=filename)
-        plt.xlabel('Index')
-        plt.ylabel('Score')
-        plt.title('Line Plot of Scores')
-        plt.legend()
-        plt.grid(True)
+        plt.scatter(df.index, df['Score'], label=filename)
+        BULK_DF = pd.concat([BULK_DF, df], ignore_index=True)
+
+    plt.xlabel('Index')
+    plt.ylabel('Score')
+    plt.title('Line Plot of Scores')
+    plt.legend()
+    plt.grid(True)
+    print(BULK_DF)
+
+    x = list(BULK_DF.Iteration.to_numpy())
+    y = list(BULK_DF['Score'].to_numpy())
+
+    # m, b = np.polyfit(x, y, 1)
+
+    corr, p = pearsonr(x, y)
+    print(f"Bulk Pearson: {corr}")
+    # print(f"P-Value: {p}")
+    # plt.plot(x, m * x + b, color="red", linewidth=4, label=f'm={m}')
+
     plt.savefig(f'plots_{FOLDER_NAME}/scores.png')
     return df
 
@@ -129,9 +147,20 @@ def sub_plots(directory):
         df.reset_index(drop=True, inplace=True)
 
         subset_df = df.iloc[::10]
+        try:
+            x = df.index.to_numpy()
+            y = df['Score'].to_numpy()
+
+            m, b = np.polyfit(x, y, 1)
+        except Exception as e:
+            continue
+        corr, p = pearsonr(x, y)
+        print(f"Pearson: {corr}")
+        print(f"P-Value: {p}")
+        plt.plot(x, m * x + b, color="red", linewidth=4, label=f'm={m}')
 
         # Plot
-        plt.plot(df.index, df['Score'], marker='x', linestyle='-', label=filename)
+        plt.scatter(x, y, label=filename)
         # plt.plot(subset_df.index, subset_df['Score'], marker='x', linestyle='-', label=filename)
         plt.xlabel('Iteration')
         plt.ylabel('Score')
